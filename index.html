@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<meta name="theme-color" content="#1a0a2e"/>
+<meta name="theme-color" content="#0d0d1a"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <title>BusKo — Sathyabama Bus Tracker</title>
@@ -17,21 +17,18 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --bg:#0d0d1a;--s1:#13132a;--s2:#1a1a35;--s3:#22223d;--border:#2a2a4a;
-  --text:#f0f0ff;--muted:#6666aa;--muted2:#33334a;
+  --text:#f0f0ff;--muted:#6666aa;--muted2:#2a2a4a;
   --purple:#7c3aed;--purple-dim:#1a0a35;--purple-light:#a78bfa;
-  --yellow:#fbbf24;--yellow-dim:#2a1a00;
+  --yellow:#fbbf24;--yellow-dim:#2a1800;
   --green:#10b981;--green-dim:#052a1a;
   --red:#ef4444;--red-dim:#2a0808;
   --blue:#3b82f6;--blue-dim:#0a1535;
-  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
-  --r:14px;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;--r:14px;
 }
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);}
-
-/* MAP */
 #map{position:fixed;inset:0;z-index:1;}
 .leaflet-container{background:#0d0d1a;}
-.leaflet-tile{filter:brightness(.3) saturate(.5) hue-rotate(200deg);}
+.leaflet-tile{filter:brightness(.28) saturate(.4) hue-rotate(200deg);}
 .leaflet-control-zoom a{background:var(--s2)!important;color:var(--text)!important;border-color:var(--border)!important;}
 .leaflet-control-attribution{display:none;}
 
@@ -40,12 +37,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .screen.active{display:flex;}
 
 /* SPLASH */
-#screen-splash{align-items:center;justify-content:center;padding:32px 24px;text-align:center;}
-.college-badge{background:var(--purple-dim);border:1px solid var(--purple);border-radius:10px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--purple-light);letter-spacing:.05em;margin-bottom:20px;display:inline-block;}
-.app-icon{font-size:64px;margin-bottom:12px;}
-.app-name{font-size:36px;font-weight:700;letter-spacing:-0.03em;color:var(--text);margin-bottom:4px;}
+#screen-splash{align-items:center;justify-content:center;padding:32px 20px;text-align:center;}
+.college-badge{background:var(--purple-dim);border:1px solid var(--purple);border-radius:10px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--purple-light);letter-spacing:.05em;margin-bottom:16px;display:inline-block;}
+.app-name{font-size:40px;font-weight:700;letter-spacing:-0.03em;margin-bottom:4px;}
 .app-name span{color:var(--yellow);}
-.app-tag{font-size:14px;color:var(--muted);margin-bottom:36px;}
+.app-tag{font-size:13px;color:var(--muted);margin-bottom:32px;}
 .splash-form{width:100%;max-width:340px;text-align:left;}
 .field{margin-bottom:14px;}
 .field label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:6px;}
@@ -53,131 +49,123 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .field input:focus,.field select:focus{border-color:var(--purple);}
 .field select option{background:var(--s2);}
 .role-row{display:flex;gap:10px;}
-.role-opt{flex:1;padding:14px 10px;text-align:center;border-radius:10px;border:1px solid var(--border);background:var(--s2);cursor:pointer;transition:all .15s;}
+.role-opt{flex:1;padding:12px 8px;text-align:center;border-radius:10px;border:1px solid var(--border);background:var(--s2);cursor:pointer;transition:all .15s;}
 .role-opt.active{background:var(--purple-dim);border-color:var(--purple);}
-.role-opt .role-icon{font-size:24px;margin-bottom:4px;}
-.role-opt .role-label{font-size:13px;font-weight:600;}
-.role-opt .role-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-.btn{width:100%;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;transition:transform .1s;margin-bottom:8px;}
+.role-icon{font-size:22px;margin-bottom:4px;}
+.role-label{font-size:13px;font-weight:600;}
+.role-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+.btn{width:100%;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;transition:transform .1s;margin-bottom:8px;}
 .btn:active{transform:scale(.97);}
 .btn-primary{background:var(--purple);color:#fff;}
-.btn-ghost{background:var(--s2);color:var(--text);border:1px solid var(--border);}
 .btn-yellow{background:var(--yellow);color:#000;}
+.btn-ghost{background:var(--s2);color:var(--text);border:1px solid var(--border);}
 .btn-red{background:var(--red-dim);color:var(--red);border:1px solid #3a1010;}
-.btn-green{background:var(--green-dim);color:var(--green);border:1px solid #0a3a1a;}
-.btn-sm{padding:8px 14px;font-size:13px;font-weight:700;border-radius:8px;width:auto;}
+.btn-green{background:var(--green-dim);color:var(--green);border:1px solid #0a3a20;}
+.btn-sm{padding:8px 14px;font-size:13px;width:auto;border-radius:8px;}
 
-/* BUS SELECT SCREEN */
-#screen-buses{padding:0;}
-.screen-header{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--s1);position:sticky;top:0;z-index:10;}
-.screen-header h2{font-size:18px;font-weight:700;flex:1;}
-.back-btn{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;}
-.bus-card{margin:12px 16px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:border-color .2s;}
-.bus-card:hover,.bus-card:active{border-color:var(--purple);}
-.bus-card-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-.bus-number{width:44px;height:44px;border-radius:10px;background:var(--purple-dim);border:1px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--purple-light);flex-shrink:0;}
-.bus-name{font-size:16px;font-weight:600;}
+/* SCREEN HEADER */
+.screen-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--s1);position:sticky;top:0;z-index:10;}
+.screen-header h2{font-size:17px;font-weight:700;flex:1;}
+.back-btn{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;}
+
+/* BUS CARDS */
+.bus-card{margin:10px 14px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:14px;cursor:pointer;transition:border-color .2s;}
+.bus-card:active{border-color:var(--purple);}
+.bus-card-top{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.bus-num-badge{min-width:44px;height:44px;border-radius:10px;background:var(--purple-dim);border:1px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--purple-light);padding:0 8px;flex-shrink:0;}
+.bus-info{flex:1;}
+.bus-name{font-size:15px;font-weight:600;}
 .bus-route{font-size:12px;color:var(--muted);margin-top:2px;}
-.bus-status{margin-left:auto;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;}
-.status-live{background:var(--green-dim);color:var(--green);}
-.status-waiting{background:var(--yellow-dim);color:var(--yellow);}
-.status-offline{background:var(--muted2);color:var(--muted);}
-.bus-stops-row{display:flex;gap:6px;flex-wrap:wrap;}
-.stop-chip{font-size:11px;background:var(--s3);border:1px solid var(--border);border-radius:99px;padding:3px 10px;color:var(--muted);}
+.bus-status{font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;flex-shrink:0;}
+.s-live{background:var(--green-dim);color:var(--green);}
+.s-offline{background:var(--muted2);color:var(--muted);}
+.bus-meta{display:flex;gap:8px;flex-wrap:wrap;}
+.meta-chip{font-size:11px;background:var(--s3);border:1px solid var(--border);border-radius:99px;padding:3px 10px;color:var(--muted);}
 
-/* GAME HUD */
-#hud-top{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(13,13,26,.92);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);padding:10px 14px;display:none;align-items:center;gap:10px;}
-.hud-bus-num{width:36px;height:36px;border-radius:8px;background:var(--purple-dim);border:1px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--purple-light);flex-shrink:0;}
-.hud-bus-info{flex:1;}
-.hud-bus-name{font-size:14px;font-weight:700;}
-.hud-bus-status{font-size:11px;color:var(--muted);}
-.hud-right{display:flex;gap:8px;align-items:center;}
-.hud-btn{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;}
+/* SEARCH BAR */
+.search-wrap{padding:10px 14px;border-bottom:1px solid var(--border);background:var(--s1);}
+.search-wrap input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;padding:10px 14px;font-family:var(--font);outline:none;}
+.search-wrap input:focus{border-color:var(--purple);}
 
-/* STATS BAR */
-#stats-bar{position:fixed;top:57px;left:0;right:0;z-index:200;display:none;flex;background:rgba(13,13,26,.9);border-bottom:1px solid var(--border);backdrop-filter:blur(8px);}
-.stat{flex:1;text-align:center;padding:8px 4px;border-right:1px solid var(--border);}
+/* HUD */
+#hud-top{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(13,13,26,.94);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);padding:10px 12px;display:none;align-items:center;gap:10px;}
+.hud-badge{min-width:36px;height:36px;border-radius:8px;background:var(--purple-dim);border:1px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--purple-light);padding:0 6px;flex-shrink:0;}
+.hud-info{flex:1;}
+.hud-name{font-size:14px;font-weight:700;}
+.hud-sub{font-size:11px;color:var(--muted);}
+.hud-actions{display:flex;gap:6px;}
+.hud-btn{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;white-space:nowrap;}
+
+/* STATS */
+#stats-bar{position:fixed;top:57px;left:0;right:0;z-index:200;display:none;background:rgba(13,13,26,.9);border-bottom:1px solid var(--border);backdrop-filter:blur(8px);}
+.stats-inner{display:flex;}
+.stat{flex:1;text-align:center;padding:7px 2px;border-right:1px solid var(--border);}
 .stat:last-child{border-right:none;}
-.stat-val{font-size:15px;font-weight:700;font-family:var(--mono);color:var(--yellow);}
+.stat-val{font-size:14px;font-weight:700;font-family:var(--mono);color:var(--yellow);}
 .stat-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:1px;}
 
-/* STOPS PANEL */
-#stops-panel{position:fixed;left:0;top:0;bottom:0;width:240px;z-index:300;background:rgba(13,13,26,.97);border-right:1px solid var(--border);backdrop-filter:blur(16px);transform:translateX(-100%);transition:transform .3s cubic-bezier(.25,1,.5,1);display:flex;flex-direction:column;}
-#stops-panel.open{transform:translateX(0);}
-#sp-header{padding:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
-#sp-header h3{font-size:14px;font-weight:700;color:var(--yellow);}
-#sp-close{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;}
-#stops-list{flex:1;overflow-y:auto;padding:8px;}
-.stop-item{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:8px;margin-bottom:4px;cursor:pointer;transition:background .15s;}
-.stop-item:hover{background:var(--s2);}
-.stop-item.next{background:var(--yellow-dim);border:1px solid #3a2a00;}
-.stop-item.passed{opacity:.4;}
-.stop-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.stop-line{width:2px;height:20px;background:var(--border);margin:0 auto;display:block;}
-.stop-col{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
-.stop-name{font-size:13px;font-weight:500;flex:1;}
-.stop-eta{font-size:11px;font-family:var(--mono);color:var(--muted);margin-left:auto;}
+/* BOTTOM PANELS */
+#bottom-student{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(13,13,26,.94);border-top:1px solid var(--border);backdrop-filter:blur(12px);padding:14px;display:none;}
+#bottom-tracker{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(13,13,26,.94);border-top:1px solid var(--border);backdrop-filter:blur(12px);padding:14px;display:none;}
 
-/* TRACKER BOTTOM */
-#bottom-tracker{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(13,13,26,.93);border-top:1px solid var(--border);backdrop-filter:blur(12px);padding:14px;display:none;}
-#tracker-status{text-align:center;margin-bottom:10px;font-size:13px;color:var(--muted);}
-#tracker-status span{color:var(--green);font-weight:700;}
-#track-btn{width:100%;padding:15px;font-size:16px;font-weight:700;font-family:var(--font);border:none;border-radius:var(--r);cursor:pointer;transition:transform .1s;}
+.info-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:10px;}
+.info-card-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px;}
+.info-card-val{font-size:28px;font-weight:700;font-family:var(--mono);color:var(--yellow);}
+.info-card-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+.info-row{display:flex;gap:10px;}
+.info-row .info-card{flex:1;margin-bottom:0;}
+
+#track-btn{width:100%;padding:14px;font-size:15px;font-weight:700;font-family:var(--font);border:none;border-radius:var(--r);cursor:pointer;transition:transform .1s;}
 #track-btn:active{transform:scale(.97);}
-#track-btn.tracking{background:var(--red);color:#fff;}
-#track-btn.start{background:var(--yellow);color:#000;}
+.tracking-status{text-align:center;font-size:12px;color:var(--muted);margin-bottom:8px;}
+.tracking-status b{color:var(--green);}
 
-/* WATCHER BOTTOM */
-#bottom-watcher{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(13,13,26,.93);border-top:1px solid var(--border);backdrop-filter:blur(12px);padding:14px;display:none;}
-.arrival-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;}
-.arrival-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
-.arrival-row{display:flex;align-items:baseline;gap:8px;}
-.arrival-time{font-size:36px;font-weight:700;font-family:var(--mono);color:var(--yellow);}
-.arrival-unit{font-size:14px;color:var(--muted);}
-.arrival-stop{font-size:13px;color:var(--muted);margin-top:4px;}
-.bus-dist{font-size:13px;color:var(--text);margin-top:4px;font-family:var(--mono);}
-.notify-btn{width:100%;background:var(--purple-dim);color:var(--purple-light);border:1px solid var(--purple);border-radius:10px;padding:11px;font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;}
+/* SUGGEST STOP */
+#suggest-btn{position:fixed;right:14px;bottom:160px;z-index:200;background:var(--purple);color:#fff;border:none;border-radius:99px;padding:10px 16px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;display:none;box-shadow:0 4px 20px rgba(124,58,237,.4);}
 
-/* STOPS TOGGLE */
-#stops-toggle{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:200;background:rgba(13,13,26,.88);border:1px solid var(--border);border-left:none;border-radius:0 var(--r) var(--r) 0;padding:10px 8px;cursor:pointer;font-size:11px;font-weight:700;color:var(--yellow);writing-mode:vertical-rl;letter-spacing:.1em;backdrop-filter:blur(8px);display:none;}
+/* ADMIN SCREEN */
+#screen-admin{padding:0;}
+.admin-section{margin:14px;}
+.admin-section h3{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px;}
+.pending-card{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;}
+.pending-name{font-size:14px;font-weight:600;}
+.pending-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+.pending-actions{display:flex;gap:8px;margin-top:10px;}
 
-/* NO BUS LIVE */
-.no-live-card{margin:16px;background:var(--yellow-dim);border:1px solid #3a2a00;border-radius:var(--r);padding:16px;text-align:center;}
-.no-live-card .icon{font-size:32px;margin-bottom:8px;}
-.no-live-card p{font-size:13px;color:var(--yellow);line-height:1.5;}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:var(--s1);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:85vh;overflow-y:auto;}
+.modal-sheet h3{font-size:16px;font-weight:700;margin-bottom:14px;}
 
 /* TOAST */
-#toast{position:fixed;bottom:120px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--s3);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;color:var(--text);transition:transform .3s cubic-bezier(.25,1,.5,1),opacity .3s;z-index:999;white-space:nowrap;opacity:0;pointer-events:none;}
+#toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--s3);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;color:var(--text);transition:transform .3s cubic-bezier(.25,1,.5,1),opacity .3s;z-index:999;white-space:nowrap;opacity:0;pointer-events:none;}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 
 /* GPS PULSE */
-.gps-dot{width:16px;height:16px;border-radius:50%;border:3px solid rgba(255,255,255,.3);animation:gps 2s infinite;}
-@keyframes gps{0%{box-shadow:0 0 0 0 rgba(251,191,36,.5);}70%{box-shadow:0 0 0 12px rgba(251,191,36,0);}100%{box-shadow:0 0 0 0 rgba(251,191,36,0);}}
+.gps-pulse{border-radius:50%;animation:gps 2s infinite;}
+@keyframes gps{0%{box-shadow:0 0 0 0 rgba(251,191,36,.6);}70%{box-shadow:0 0 0 14px rgba(251,191,36,0);}100%{box-shadow:0 0 0 0 rgba(251,191,36,0);}}
 
-/* SCHEDULE MODAL */
-#schedule-modal{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
-#schedule-modal.open{display:flex;}
-.schedule-sheet{background:var(--s1);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:70vh;overflow-y:auto;}
-.schedule-sheet h3{font-size:16px;font-weight:700;margin-bottom:14px;color:var(--yellow);}
-.schedule-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
-.schedule-row:last-child{border-bottom:none;}
-.schedule-time{font-family:var(--mono);font-weight:600;color:var(--text);}
-.schedule-stop{color:var(--muted);font-size:13px;}
+/* AREA LABEL */
+.area-label{background:rgba(13,13,26,.85);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;color:var(--yellow);white-space:nowrap;}
+
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+.empty-state .ei{font-size:40px;margin-bottom:10px;}
+.empty-state p{font-size:14px;}
 </style>
 </head>
 <body>
 
-<!-- MAP -->
 <div id="map"></div>
 
 <!-- ══ SPLASH ══ -->
 <div class="screen active" id="screen-splash">
   <div class="college-badge">🎓 Sathyabama Institute of Science & Technology</div>
-  <div class="app-icon">🚌</div>
+  <div style="font-size:56px;margin-bottom:8px;">🚌</div>
   <div class="app-name">Bus<span>Ko</span></div>
-  <div class="app-tag">Live college bus tracker</div>
+  <div class="app-tag">Live college bus tracker · 150+ buses</div>
   <div class="splash-form">
-    <div class="field"><label>Your Name</label><input type="text" id="user-name" placeholder="e.g. Arjun" maxlength="20"/></div>
+    <div class="field"><label>Your Name</label><input type="text" id="user-name" placeholder="e.g. Arjun Kumar" maxlength="20"/></div>
     <div class="field">
       <label>I am a…</label>
       <div class="role-row">
@@ -191,95 +179,137 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
           <div class="role-label">Tracker</div>
           <div class="role-sub">I'm on the bus</div>
         </div>
+        <div class="role-opt" id="role-admin" onclick="setRole('admin')">
+          <div class="role-icon">🔑</div>
+          <div class="role-label">Admin</div>
+          <div class="role-sub">Manage buses</div>
+        </div>
       </div>
     </div>
     <button class="btn btn-primary" onclick="saveProfile()">Continue →</button>
   </div>
 </div>
 
-<!-- ══ BUS SELECT ══ -->
+<!-- ══ ADMIN LOGIN ══ -->
+<div class="screen" id="screen-admin-login">
+  <div class="screen-header">
+    <button class="back-btn" onclick="showScreen('screen-splash')">←</button>
+    <h2>🔑 Admin Login</h2>
+  </div>
+  <div style="padding:20px;">
+    <div class="field"><label>Admin Password</label><input type="password" id="admin-pass" placeholder="Enter admin password"/></div>
+    <button class="btn btn-primary" onclick="adminLogin()">Login →</button>
+    <p style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center;">Default password: <b style="color:var(--yellow);">sathyabama2024</b></p>
+  </div>
+</div>
+
+<!-- ══ ADMIN PANEL ══ -->
+<div class="screen" id="screen-admin">
+  <div class="screen-header">
+    <button class="back-btn" onclick="showScreen('screen-splash')">←</button>
+    <h2>🔑 Admin Panel</h2>
+    <button class="btn-sm btn btn-primary" onclick="openAddBus()">+ Add Bus</button>
+  </div>
+
+  <div class="admin-section">
+    <h3>📋 All Buses (tap to edit)</h3>
+    <div id="admin-bus-list"></div>
+  </div>
+
+  <div class="admin-section">
+    <h3>💡 Student Suggestions</h3>
+    <div id="suggestions-list"></div>
+  </div>
+</div>
+
+<!-- ══ BUS LIST (STUDENT/TRACKER) ══ -->
 <div class="screen" id="screen-buses">
   <div class="screen-header">
     <button class="back-btn" onclick="showScreen('screen-splash')">←</button>
-    <h2>🚌 Select Your Bus</h2>
-    <div id="live-count" style="font-size:12px;color:var(--green);font-family:var(--mono);"></div>
+    <h2 id="bus-list-title">🚌 Select Bus</h2>
+    <div id="live-badge" style="font-size:11px;color:var(--green);font-family:var(--mono);"></div>
   </div>
-  <div id="bus-list"></div>
+  <div class="search-wrap">
+    <input type="text" id="bus-search" placeholder="🔍 Search bus number or area…" oninput="filterBuses()"/>
+  </div>
+  <div id="bus-list-container"></div>
 </div>
 
-<!-- ══ TRACKER: BUS SELECT ══ -->
-<div class="screen" id="screen-tracker-select">
-  <div class="screen-header">
-    <button class="back-btn" onclick="showScreen('screen-splash')">←</button>
-    <h2>📍 Which bus are you on?</h2>
-  </div>
-  <div id="tracker-bus-list"></div>
-</div>
-
-<!-- ══ GAME HUD ══ -->
+<!-- HUD -->
 <div id="hud-top">
-  <div class="hud-bus-num" id="hud-num">B1</div>
-  <div class="hud-bus-info">
-    <div class="hud-bus-name" id="hud-name">Bus 1</div>
-    <div class="hud-bus-status" id="hud-status">Connecting…</div>
+  <div class="hud-badge" id="hud-badge">B1</div>
+  <div class="hud-info">
+    <div class="hud-name" id="hud-name">Bus</div>
+    <div class="hud-sub" id="hud-sub">Loading…</div>
   </div>
-  <div class="hud-right">
-    <div class="hud-btn" onclick="toggleStops()">🗺 Stops</div>
-    <div class="hud-btn" onclick="openSchedule()">🕐 Schedule</div>
-    <div class="hud-btn" onclick="exitBus()">✕</div>
+  <div class="hud-actions">
+    <div class="hud-btn" onclick="openSuggestStop()">💡 Suggest</div>
+    <div class="hud-btn" onclick="exitBus()">✕ Exit</div>
   </div>
 </div>
 
-<div id="stats-bar" style="display:none;">
-  <div class="stat"><div class="stat-val" id="s-dist">—</div><div class="stat-label">bus distance</div></div>
-  <div class="stat"><div class="stat-val" id="s-eta">—</div><div class="stat-label">arrival (min)</div></div>
-  <div class="stat"><div class="stat-val" id="s-speed">—</div><div class="stat-label">km/h</div></div>
-  <div class="stat"><div class="stat-val" id="s-next">—</div><div class="stat-label">next stop</div></div>
+<div id="stats-bar">
+  <div class="stats-inner">
+    <div class="stat"><div class="stat-val" id="s-dist">—</div><div class="stat-label">km away</div></div>
+    <div class="stat"><div class="stat-val" id="s-speed">—</div><div class="stat-label">km/h</div></div>
+    <div class="stat"><div class="stat-val" id="s-area">—</div><div class="stat-label">near</div></div>
+    <div class="stat"><div class="stat-val" id="s-updated">—</div><div class="stat-label">updated</div></div>
+  </div>
 </div>
 
-<!-- STOPS TOGGLE -->
-<div id="stops-toggle" onclick="toggleStops()">STOPS</div>
-
-<!-- STOPS PANEL -->
-<div id="stops-panel">
-  <div id="sp-header"><h3>🚏 Route Stops</h3><button id="sp-close" onclick="toggleStops()">✕</button></div>
-  <div id="stops-list"></div>
+<!-- STUDENT BOTTOM -->
+<div id="bottom-student">
+  <div class="info-row" style="margin-bottom:10px;">
+    <div class="info-card">
+      <div class="info-card-label">Bus is</div>
+      <div class="info-card-val" id="b-dist">—</div>
+      <div class="info-card-sub">km from college gate</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-label">Est. arrival</div>
+      <div class="info-card-val" id="b-eta">—</div>
+      <div class="info-card-sub">minutes to college</div>
+    </div>
+  </div>
+  <button class="btn btn-ghost" onclick="map.setView(busLatLng||[12.8726,80.2209], 15, {animate:true})">📍 Find Bus on Map</button>
 </div>
 
 <!-- TRACKER BOTTOM -->
 <div id="bottom-tracker">
-  <div id="tracker-status">Status: <span id="tracker-status-text">Not tracking</span></div>
-  <button id="track-btn" class="start" onclick="toggleTracking()">📍 Start Broadcasting Location</button>
+  <div class="tracking-status" id="track-status">Status: <b>Not broadcasting</b></div>
+  <button id="track-btn" style="background:var(--yellow);color:#000;" onclick="toggleTracking()">📍 Start Broadcasting Location</button>
 </div>
 
-<!-- WATCHER BOTTOM -->
-<div id="bottom-watcher">
-  <div class="arrival-card">
-    <div class="arrival-label">Estimated arrival at your stop</div>
-    <div class="arrival-row">
-      <div class="arrival-time" id="eta-minutes">—</div>
-      <div class="arrival-unit">min</div>
-    </div>
-    <div class="arrival-stop" id="eta-stop">Select your stop below</div>
-    <div class="bus-dist" id="bus-dist-text">Bus location: waiting…</div>
+<!-- SUGGEST STOP MODAL -->
+<div class="modal-overlay" id="suggest-modal">
+  <div class="modal-sheet">
+    <h3>💡 Suggest a Stop</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Help other students by suggesting a stop for this bus. Admin will review it.</p>
+    <div class="field"><label>Stop Name / Area</label><input type="text" id="suggest-name" placeholder="e.g. OMR Toll Plaza, Sholinganallur Signal"/></div>
+    <div class="field"><label>Your Landmark Description</label><input type="text" id="suggest-desc" placeholder="e.g. Near Dominos, opposite to petrol bunk"/></div>
+    <button class="btn btn-primary" onclick="submitSuggestion()">Submit →</button>
+    <button class="btn btn-ghost" onclick="closeSuggestModal()">Cancel</button>
   </div>
-  <button class="notify-btn" onclick="requestNotify()">🔔 Notify me 5 min before arrival</button>
 </div>
 
-<!-- STOPS PANEL -->
-<div id="schedule-modal">
-  <div class="schedule-sheet">
-    <h3>📅 Bus Schedule</h3>
-    <div id="schedule-list"></div>
-    <button class="btn btn-ghost" style="margin-top:12px;" onclick="closeSchedule()">Close</button>
+<!-- ADD BUS MODAL -->
+<div class="modal-overlay" id="add-bus-modal">
+  <div class="modal-sheet">
+    <h3 id="add-bus-title">➕ Add New Bus</h3>
+    <div class="field"><label>Bus Number</label><input type="text" id="new-bus-num" placeholder="e.g. 42, A7, Velachery Express"/></div>
+    <div class="field"><label>Route Description</label><input type="text" id="new-bus-route" placeholder="e.g. Tambaram → OMR → Sathyabama"/></div>
+    <div class="field"><label>Main Areas Covered (comma separated)</label><input type="text" id="new-bus-areas" placeholder="e.g. Tambaram, Chromepet, Pallavaram, Vandalur"/></div>
+    <div class="field"><label>Schedule (comma separated times)</label><input type="text" id="new-bus-schedule" placeholder="e.g. 7:00 AM, 8:00 AM, 4:00 PM"/></div>
+    <button class="btn btn-primary" id="save-bus-btn" onclick="saveBus()">Save Bus →</button>
+    <button class="btn btn-ghost" onclick="closeAddBus()">Cancel</button>
   </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-// ══ FIREBASE CONFIG ══
-const FIREBASE_CONFIG = {
+// ══ FIREBASE ══
+const FB_CONFIG = {
   apiKey: "AIzaSyDXU236y-jZf9BxQja1VpheAAKfMgaydeM",
   authDomain: "veloclash.firebaseapp.com",
   databaseURL: "https://veloclash-default-rtdb.firebaseio.com",
@@ -289,380 +319,282 @@ const FIREBASE_CONFIG = {
   appId: "1:693963602196:web:3ad1100bfa864ddd516a01"
 };
 
-// ══ SATHYABAMA BUSES ══
-const BUSES = [
-  {
-    id:'B1', name:'Bus 1', route:'Tambaram → Sathyabama',
-    stops:[
-      {name:'Tambaram Station', lat:12.9249, lng:80.1000},
-      {name:'Chromepet', lat:12.9516, lng:80.1426},
-      {name:'Pallavaram', lat:12.9675, lng:80.1492},
-      {name:'Vandalur', lat:12.8897, lng:80.0827},
-      {name:'Sathyabama Gate', lat:12.8726, lng:80.2209},
-    ],
-    schedule:['7:00 AM','8:00 AM','9:00 AM','4:00 PM','5:00 PM','6:00 PM']
-  },
-  {
-    id:'B2', name:'Bus 2', route:'Velachery → Sathyabama',
-    stops:[
-      {name:'Velachery', lat:12.9815, lng:80.2180},
-      {name:'Medavakkam', lat:12.9279, lng:80.1948},
-      {name:'Sholinganallur', lat:12.9010, lng:80.2279},
-      {name:'Perumbakkam', lat:12.9072, lng:80.1996},
-      {name:'Sathyabama Gate', lat:12.8726, lng:80.2209},
-    ],
-    schedule:['7:15 AM','8:15 AM','9:15 AM','4:15 PM','5:15 PM','6:15 PM']
-  },
-  {
-    id:'B3', name:'Bus 3', route:'Adyar → Sathyabama',
-    stops:[
-      {name:'Adyar', lat:13.0012, lng:80.2565},
-      {name:'Besant Nagar', lat:12.9987, lng:80.2707},
-      {name:'Thiruvanmiyur', lat:12.9827, lng:80.2595},
-      {name:'Karapakkam', lat:12.9361, lng:80.2280},
-      {name:'Sathyabama Gate', lat:12.8726, lng:80.2209},
-    ],
-    schedule:['7:30 AM','8:30 AM','9:30 AM','4:30 PM','5:30 PM','6:30 PM']
-  },
-  {
-    id:'B4', name:'Bus 4', route:'Porur → Sathyabama',
-    stops:[
-      {name:'Porur', lat:13.0358, lng:80.1573},
-      {name:'Maduravoyal', lat:13.0683, lng:80.1711},
-      {name:'Ambattur', lat:13.0983, lng:80.1597},
-      {name:'Poonamallee', lat:13.0461, lng:80.0962},
-      {name:'Sathyabama Gate', lat:12.8726, lng:80.2209},
-    ],
-    schedule:['7:45 AM','8:45 AM','9:45 AM','4:45 PM','5:45 PM','6:45 PM']
-  },
-];
+const ADMIN_PASSWORD = 'sathyabama2024';
+const COLLEGE_LAT = 12.8726, COLLEGE_LNG = 80.2209;
 
 // ══ STATE ══
-let db, profile = {name:'', role:'student'};
+let db, map;
+let profile = JSON.parse(localStorage.getItem('busko_profile') || 'null') || {name:'', role:'student'};
+let allBuses = {};
 let currentBus = null;
 let tracking = false;
 let watchId = null;
 let busMarker = null;
-let myStopIndex = 0;
-let busLat = null, busLng = null;
-let lastBusLat = null, lastBusLng = null;
-let lastBusTime = null;
-let stopMarkers = [];
 let routeLine = null;
-let notifyEnabled = false;
-let uid = 'u_' + Math.random().toString(36).slice(2,8);
+let busLatLng = null;
+let lastBusPos = null, lastBusTime = null;
+let editingBusId = null;
 
-// ══ INIT ══
+// ══ BOOT ══
 window.addEventListener('load', function() {
   try {
-    firebase.initializeApp(FIREBASE_CONFIG);
+    firebase.initializeApp(FB_CONFIG);
     db = firebase.database();
-    toast('🔥 Connected!');
-  } catch(e) {
-    console.warn('Firebase failed:', e);
-    toast('⚠️ Offline mode');
-  }
+  } catch(e) { console.warn('Firebase:', e); }
 
-  map = L.map('map', {center:[12.8726,80.2209], zoom:12, zoomControl:false, attributionControl:false});
+  map = L.map('map', {center:[12.8726,80.2209], zoom:11, zoomControl:false, attributionControl:false});
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
   L.control.zoom({position:'bottomright'}).addTo(map);
 
-  buildBusLists();
-  listenToAllBuses();
+  // College marker
+  const gateIcon = L.divIcon({className:'', html:`<div style="background:#fbbf24;width:18px;height:18px;border-radius:50%;border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:10px;">🎓</div>`, iconSize:[18,18], iconAnchor:[9,9]});
+  L.marker([COLLEGE_LAT, COLLEGE_LNG], {icon:gateIcon}).addTo(map).bindTooltip('Sathyabama Gate', {permanent:true, direction:'top', className:'area-label'});
 
-  window.saveProfile = saveProfile;
+  loadBuses();
+
+  // Expose globals
   window.setRole = setRole;
+  window.saveProfile = saveProfile;
   window.showScreen = showScreen;
-  window.selectBusAsStudent = selectBusAsStudent;
-  window.selectBusAsTracker = selectBusAsTracker;
+  window.adminLogin = adminLogin;
+  window.openAddBus = openAddBus;
+  window.closeAddBus = closeAddBus;
+  window.saveBus = saveBus;
+  window.editBus = editBus;
+  window.deleteBus = deleteBus;
+  window.selectBus = selectBus;
   window.toggleTracking = toggleTracking;
-  window.toggleStops = toggleStops;
   window.exitBus = exitBus;
-  window.openSchedule = openSchedule;
-  window.closeSchedule = closeSchedule;
-  window.setMyStop = setMyStop;
-  window.requestNotify = requestNotify;
-});
+  window.filterBuses = filterBuses;
+  window.openSuggestStop = openSuggestStop;
+  window.closeSuggestModal = closeSuggestModal;
+  window.submitSuggestion = submitSuggestion;
+  window.approveSuggestion = approveSuggestion;
+  window.rejectSuggestion = rejectSuggestion;
 
-let map;
+  if (profile.name) {
+    if (profile.role === 'admin') showScreen('screen-admin-login');
+    else { showScreen('screen-buses'); renderBusList(); }
+    document.getElementById('user-name').value = profile.name;
+    document.getElementById('bus-list-title').textContent = profile.role === 'tracker' ? '📍 Which bus are you on?' : '🚌 Select Your Bus';
+  }
+});
 
 // ══ PROFILE ══
 function setRole(r) {
   profile.role = r;
-  document.getElementById('role-student').classList.toggle('active', r==='student');
-  document.getElementById('role-tracker').classList.toggle('active', r==='tracker');
+  ['student','tracker','admin'].forEach(x => document.getElementById('role-'+x).classList.toggle('active', x===r));
 }
 
 function saveProfile() {
   const name = document.getElementById('user-name').value.trim();
   if (!name) { toast('⚠️ Enter your name'); return; }
   profile.name = name;
-  if (profile.role === 'student') showScreen('screen-buses');
-  else showScreen('screen-tracker-select');
+  localStorage.setItem('busko_profile', JSON.stringify(profile));
+  if (profile.role === 'admin') showScreen('screen-admin-login');
+  else {
+    document.getElementById('bus-list-title').textContent = profile.role === 'tracker' ? '📍 Which bus are you on?' : '🚌 Select Your Bus';
+    showScreen('screen-buses');
+    renderBusList();
+  }
 }
 
 // ══ SCREENS ══
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const el = document.getElementById(id);
-  if (el) el.classList.add('active');
-  document.getElementById('hud-top').style.display = 'none';
-  document.getElementById('stats-bar').style.display = 'none';
-  document.getElementById('bottom-tracker').style.display = 'none';
-  document.getElementById('bottom-watcher').style.display = 'none';
-  document.getElementById('stops-toggle').style.display = 'none';
+  document.getElementById(id).classList.add('active');
+  ['hud-top','stats-bar','bottom-student','bottom-tracker'].forEach(i => {
+    const el = document.getElementById(i);
+    if (el) el.style.display = 'none';
+  });
 }
 
 function showGameHUD() {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('hud-top').style.display = 'flex';
-  document.getElementById('stats-bar').style.display = 'flex';
-  document.getElementById('stops-toggle').style.display = 'block';
-  if (profile.role === 'tracker') {
-    document.getElementById('bottom-tracker').style.display = 'block';
-  } else {
-    document.getElementById('bottom-watcher').style.display = 'block';
-  }
+  document.getElementById('stats-bar').style.display = 'block';
+  if (profile.role === 'tracker') document.getElementById('bottom-tracker').style.display = 'block';
+  else document.getElementById('bottom-student').style.display = 'block';
 }
 
-// ══ BUS LISTS ══
-function buildBusLists() {
-  // Student view
-  const studentList = document.getElementById('bus-list');
-  studentList.innerHTML = BUSES.map(b => `
-    <div class="bus-card" onclick="selectBusAsStudent('${b.id}')">
-      <div class="bus-card-top">
-        <div class="bus-number">${b.id}</div>
-        <div>
-          <div class="bus-name">${b.name}</div>
-          <div class="bus-route">${b.route}</div>
-        </div>
-        <div class="bus-status status-offline" id="status-${b.id}">Offline</div>
-      </div>
-      <div class="bus-stops-row">
-        ${b.stops.map(s=>`<div class="stop-chip">📍 ${s.name}</div>`).join('')}
-      </div>
-    </div>
-  `).join('');
-
-  // Tracker view
-  const trackerList = document.getElementById('tracker-bus-list');
-  trackerList.innerHTML = BUSES.map(b => `
-    <div class="bus-card" onclick="selectBusAsTracker('${b.id}')">
-      <div class="bus-card-top">
-        <div class="bus-number">${b.id}</div>
-        <div>
-          <div class="bus-name">${b.name}</div>
-          <div class="bus-route">${b.route}</div>
-        </div>
-      </div>
-    </div>
-  `).join('');
+// ══ ADMIN ══
+function adminLogin() {
+  const pass = document.getElementById('admin-pass').value;
+  if (pass !== ADMIN_PASSWORD) { toast('❌ Wrong password'); return; }
+  profile.role = 'admin';
+  showScreen('screen-admin');
+  renderAdminBusList();
+  loadSuggestions();
 }
 
-// ══ LISTEN TO ALL BUSES (for status badges) ══
-function listenToAllBuses() {
+// ══ FIREBASE: BUSES ══
+function loadBuses() {
   if (!db) return;
-  BUSES.forEach(b => {
-    db.ref(`busko/${b.id}/location`).on('value', snap => {
-      const el = document.getElementById('status-'+b.id);
-      if (!el) return;
-      if (snap.exists()) {
-        const d = snap.val();
-        const age = Date.now() - (d.ts||0);
-        if (age < 30000) {
-          el.textContent = '● Live';
-          el.className = 'bus-status status-live';
-        } else {
-          el.textContent = '◌ Recent';
-          el.className = 'bus-status status-waiting';
-        }
-      } else {
-        el.textContent = 'Offline';
-        el.className = 'bus-status status-offline';
-      }
-    });
+  db.ref('busko_buses').on('value', snap => {
+    allBuses = snap.val() || {};
+    renderBusList();
+    renderAdminBusList();
+    updateLiveBadge();
+  });
+  // Live status updates
+  Object.keys(allBuses).forEach(id => {
+    db.ref(`busko_live/${id}`).on('value', () => updateLiveBadge());
+  });
+  db.ref('busko_live').on('value', () => {
+    updateLiveBadge();
+    renderBusList();
   });
 }
 
-// ══ SELECT BUS (STUDENT) ══
-function selectBusAsStudent(busId) {
-  currentBus = BUSES.find(b => b.id === busId);
-  profile.role = 'student';
-  enterBusView();
+function updateLiveBadge() {
+  if (!db) return;
+  db.ref('busko_live').once('value', snap => {
+    const data = snap.val() || {};
+    const liveCount = Object.values(data).filter(b => b && (Date.now()-(b.ts||0)) < 30000).length;
+    const el = document.getElementById('live-badge');
+    if (el) el.textContent = liveCount > 0 ? `● ${liveCount} live` : '';
+  });
 }
 
-function selectBusAsTracker(busId) {
-  currentBus = BUSES.find(b => b.id === busId);
-  profile.role = 'tracker';
-  enterBusView();
-}
+// ══ BUS LIST UI ══
+function renderBusList() {
+  const container = document.getElementById('bus-list-container');
+  if (!container) return;
+  const query = (document.getElementById('bus-search')?.value || '').toLowerCase();
+  const buses = Object.entries(allBuses).filter(([,b]) => {
+    if (!query) return true;
+    return b.number?.toLowerCase().includes(query) || b.route?.toLowerCase().includes(query) || b.areas?.toLowerCase().includes(query);
+  });
 
-function enterBusView() {
-  showGameHUD();
-  document.getElementById('hud-num').textContent = currentBus.id;
-  document.getElementById('hud-name').textContent = currentBus.name;
-  document.getElementById('hud-status').textContent = currentBus.route;
-
-  // Draw route on map
-  drawRoute();
-
-  // Center map on route
-  const bounds = L.latLngBounds(currentBus.stops.map(s => [s.lat, s.lng]));
-  map.fitBounds(bounds, {padding:[40,40]});
-
-  // Render stops panel
-  renderStopsPanel();
-
-  // Render stop selector for student
-  if (profile.role === 'student') {
-    renderStopSelector();
-    listenToBus();
+  if (!buses.length) {
+    container.innerHTML = `<div class="empty-state"><div class="ei">🚌</div><p>${Object.keys(allBuses).length === 0 ? 'No buses added yet.\nAdmin needs to add buses first.' : 'No buses match your search.'}</p></div>`;
+    return;
   }
 
-  // Render schedule
-  renderSchedule();
-}
-
-// ══ DRAW ROUTE ══
-function drawRoute() {
-  // Clear previous
-  stopMarkers.forEach(m => map.removeLayer(m));
-  stopMarkers = [];
-  if (routeLine) map.removeLayer(routeLine);
-
-  const latlngs = currentBus.stops.map(s => [s.lat, s.lng]);
-  routeLine = L.polyline(latlngs, {color:'#7c3aed', weight:3, opacity:.7, dashArray:'8,6'}).addTo(map);
-
-  currentBus.stops.forEach((stop, i) => {
-    const isLast = i === currentBus.stops.length - 1;
-    const icon = L.divIcon({
-      className:'',
-      html:`<div style="background:${isLast?'#fbbf24':'#7c3aed'};width:${isLast?14:10}px;height:${isLast?14:10}px;border-radius:50%;border:2px solid white;"></div>`,
-      iconSize:[14,14], iconAnchor:[7,7]
+  // Check live statuses
+  if (db) {
+    db.ref('busko_live').once('value', snap => {
+      const liveData = snap.val() || {};
+      container.innerHTML = buses.map(([id, b]) => {
+        const live = liveData[id] && (Date.now()-(liveData[id].ts||0)) < 30000;
+        const areas = (b.areas||'').split(',').map(a=>a.trim()).filter(Boolean);
+        return `<div class="bus-card" onclick="selectBus('${id}')">
+          <div class="bus-card-top">
+            <div class="bus-num-badge">${b.number||id}</div>
+            <div class="bus-info">
+              <div class="bus-name">${b.number} — ${b.route||'No route set'}</div>
+              <div class="bus-route">${b.schedule||'No schedule'}</div>
+            </div>
+            <div class="bus-status ${live?'s-live':'s-offline'}">${live?'● Live':'Offline'}</div>
+          </div>
+          <div class="bus-meta">
+            ${areas.map(a=>`<div class="meta-chip">📍 ${a}</div>`).join('')}
+          </div>
+        </div>`;
+      }).join('');
     });
-    const m = L.marker([stop.lat, stop.lng], {icon})
-      .addTo(map)
-      .bindTooltip(stop.name, {permanent:false, direction:'top'});
-    stopMarkers.push(m);
-  });
-}
-
-// ══ STOPS PANEL ══
-function renderStopsPanel() {
-  const list = document.getElementById('stops-list');
-  list.innerHTML = currentBus.stops.map((stop, i) => `
-    <div class="stop-col">
-      <div class="stop-item" id="stop-item-${i}" onclick="focusStop(${i})">
-        <div style="display:flex;flex-direction:column;align-items:center;margin-right:4px;">
-          <div class="stop-dot" style="background:${i===currentBus.stops.length-1?'#fbbf24':'#7c3aed'}"></div>
-          ${i < currentBus.stops.length-1 ? '<div style="width:2px;height:20px;background:var(--border);margin-top:2px;"></div>' : ''}
+  } else {
+    container.innerHTML = buses.map(([id,b]) => {
+      const areas = (b.areas||'').split(',').map(a=>a.trim()).filter(Boolean);
+      return `<div class="bus-card" onclick="selectBus('${id}')">
+        <div class="bus-card-top">
+          <div class="bus-num-badge">${b.number||id}</div>
+          <div class="bus-info">
+            <div class="bus-name">${b.number} — ${b.route||''}</div>
+            <div class="bus-route">${b.schedule||''}</div>
+          </div>
+          <div class="bus-status s-offline">Offline</div>
         </div>
-        <div class="stop-name">${stop.name}</div>
-        <div class="stop-eta" id="stop-eta-${i}">—</div>
-      </div>
-    </div>
-  `).join('');
+        <div class="bus-meta">${areas.map(a=>`<div class="meta-chip">📍 ${a}</div>`).join('')}</div>
+      </div>`;
+    }).join('');
+  }
 }
 
-function focusStop(i) {
-  const stop = currentBus.stops[i];
-  map.setView([stop.lat, stop.lng], 15, {animate:true});
-  toggleStops();
-}
+function filterBuses() { renderBusList(); }
 
-// ══ STOP SELECTOR (STUDENT) ══
-function renderStopSelector() {
-  const el = document.getElementById('eta-stop');
-  el.innerHTML = `My stop: <select onchange="setMyStop(this.value)" style="background:var(--s2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:4px 8px;font-size:12px;margin-left:6px;">
-    ${currentBus.stops.map((s,i)=>`<option value="${i}">${s.name}</option>`).join('')}
-  </select>`;
-}
-
-function setMyStop(idx) {
-  myStopIndex = parseInt(idx);
-  updateETA();
+// ══ SELECT BUS ══
+function selectBus(busId) {
+  currentBus = {id: busId, ...allBuses[busId]};
+  showGameHUD();
+  document.getElementById('hud-badge').textContent = currentBus.number || busId;
+  document.getElementById('hud-name').textContent = `Bus ${currentBus.number} · ${currentBus.route||''}`;
+  document.getElementById('hud-sub').textContent = 'Connecting…';
+  map.setView([COLLEGE_LAT, COLLEGE_LNG], 12);
+  if (profile.role === 'student') listenToBus(busId);
 }
 
 // ══ LISTEN TO BUS (STUDENT) ══
-function listenToBus() {
-  if (!db) return;
-  db.ref(`busko/${currentBus.id}/location`).on('value', snap => {
-    if (!snap.exists()) {
-      document.getElementById('hud-status').textContent = '⚠️ Bus not live yet';
-      document.getElementById('bus-dist-text').textContent = 'Bus not broadcasting yet';
-      document.getElementById('eta-minutes').textContent = '—';
+function listenToBus(busId) {
+  if (!db) { document.getElementById('hud-sub').textContent = '⚠️ Offline — no live data'; return; }
+  db.ref(`busko_live/${busId}`).on('value', snap => {
+    if (!snap.exists() || !snap.val()) {
+      document.getElementById('hud-sub').textContent = '⚠️ Bus not live yet';
+      document.getElementById('b-dist').textContent = '—';
+      document.getElementById('b-eta').textContent = '—';
+      document.getElementById('s-dist').textContent = '—';
+      document.getElementById('s-updated').textContent = '—';
       return;
     }
     const d = snap.val();
-    busLat = d.lat; busLng = d.lng;
     const age = Math.round((Date.now() - d.ts) / 1000);
+    busLatLng = [d.lat, d.lng];
 
-    document.getElementById('hud-status').textContent = `● Live · updated ${age}s ago`;
-
-    // Update bus marker
-    updateBusMarker(d.lat, d.lng);
+    document.getElementById('hud-sub').textContent = `● Live · ${d.tracker||'tracker'} · ${age}s ago`;
+    document.getElementById('s-updated').textContent = age+'s';
 
     // Speed
-    if (lastBusLat && lastBusTime) {
-      const dist = haversine(lastBusLat, lastBusLng, d.lat, d.lng);
+    if (lastBusPos && lastBusTime) {
+      const dist = haversine(lastBusPos[0], lastBusPos[1], d.lat, d.lng);
       const elapsed = (d.ts - lastBusTime) / 3600000;
       const spd = elapsed > 0 ? Math.round(dist/1000/elapsed) : 0;
-      document.getElementById('s-speed').textContent = spd;
+      document.getElementById('s-speed').textContent = Math.min(spd, 120);
     }
-    lastBusLat = d.lat; lastBusLng = d.lng; lastBusTime = d.ts;
+    lastBusPos = [d.lat, d.lng]; lastBusTime = d.ts;
 
-    // Distance from bus to college gate
-    const gate = currentBus.stops[currentBus.stops.length-1];
-    const distToGate = haversine(d.lat, d.lng, gate.lat, gate.lng);
-    document.getElementById('s-dist').textContent = (distToGate/1000).toFixed(1)+'km';
-    document.getElementById('bus-dist-text').textContent = `Bus is ${(distToGate/1000).toFixed(1)}km away`;
+    // Distance to college
+    const distToCollege = haversine(d.lat, d.lng, COLLEGE_LAT, COLLEGE_LNG);
+    const distKm = (distToCollege/1000).toFixed(1);
+    const etaMin = Math.round((distToCollege/1000)/30*60);
+    document.getElementById('s-dist').textContent = distKm+'km';
+    document.getElementById('b-dist').textContent = distKm;
+    document.getElementById('b-eta').textContent = etaMin;
 
-    updateETA();
-    updateStopETAs();
-    checkNotify();
+    // Nearest area
+    const area = d.area || getNearestArea(d.lat, d.lng, currentBus);
+    document.getElementById('s-area').textContent = area.split(' ')[0];
+
+    // Move bus marker
+    updateBusMarker(d.lat, d.lng, area);
+
+    // Route trail
+    if (!routeLine) {
+      routeLine = L.polyline([[d.lat,d.lng]], {color:'#7c3aed', weight:4, opacity:.7}).addTo(map);
+    } else {
+      routeLine.addLatLng([d.lat,d.lng]);
+    }
+
+    map.panTo([d.lat,d.lng], {animate:true, duration:1});
   });
 }
 
-function updateBusMarker(lat, lng) {
+function getNearestArea(lat, lng, bus) {
+  if (!bus || !bus.areas) return 'En route';
+  // Just return first area as approximation (no coords for dynamic areas)
+  const areas = bus.areas.split(',').map(a=>a.trim());
+  return areas[0] || 'En route';
+}
+
+function updateBusMarker(lat, lng, area) {
   if (!busMarker) {
     const icon = L.divIcon({
       className:'',
-      html:`<div style="background:#fbbf24;width:28px;height:28px;border-radius:50%;border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 10px rgba(251,191,36,.5);">🚌</div>`,
+      html:`<div class="gps-pulse" style="background:#fbbf24;width:28px;height:28px;border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 16px rgba(251,191,36,.6);">🚌</div>`,
       iconSize:[28,28], iconAnchor:[14,14]
     });
     busMarker = L.marker([lat,lng],{icon,zIndexOffset:1000}).addTo(map);
-    busMarker.bindTooltip(currentBus.name,{permanent:false,direction:'top'});
-  } else {
-    busMarker.setLatLng([lat,lng]);
-  }
-}
-
-function updateETA() {
-  if (busLat === null) return;
-  const myStop = currentBus.stops[myStopIndex];
-  const dist = haversine(busLat, busLng, myStop.lat, myStop.lng);
-  // Assume avg 30kmh in city
-  const etaMin = Math.round((dist/1000)/30*60);
-  document.getElementById('eta-minutes').textContent = etaMin;
-  document.getElementById('s-eta').textContent = etaMin;
-  // Next stop
-  let nearest = currentBus.stops[0], minD = Infinity;
-  currentBus.stops.forEach(s => {
-    const d = haversine(busLat, busLng, s.lat, s.lng);
-    if (d < minD) { minD=d; nearest=s; }
-  });
-  document.getElementById('s-next').textContent = nearest.name.split(' ')[0];
-}
-
-function updateStopETAs() {
-  if (busLat === null) return;
-  currentBus.stops.forEach((stop, i) => {
-    const dist = haversine(busLat, busLng, stop.lat, stop.lng);
-    const etaMin = Math.round((dist/1000)/30*60);
-    const el = document.getElementById('stop-eta-'+i);
-    if (el) el.textContent = etaMin+'min';
-  });
+  } else { busMarker.setLatLng([lat,lng]); }
+  if (area) busMarker.bindTooltip(area, {permanent:false, direction:'top'});
 }
 
 // ══ TRACKER ══
@@ -674,82 +606,175 @@ function startTracking() {
   if (!navigator.geolocation) { toast('⚠️ GPS not available'); return; }
   tracking = true;
   document.getElementById('track-btn').textContent = '🛑 Stop Broadcasting';
-  document.getElementById('track-btn').className = 'tracking';
-  document.getElementById('tracker-status-text').textContent = 'Broadcasting live 🟢';
+  document.getElementById('track-btn').style.background = 'var(--red)';
+  document.getElementById('track-btn').style.color = '#fff';
 
   watchId = navigator.geolocation.watchPosition(pos => {
-    const {latitude:lat, longitude:lng} = pos.coords;
-    if (db) {
-      db.ref(`busko/${currentBus.id}/location`).set({
-        lat, lng, ts: Date.now(),
-        tracker: profile.name,
-        busId: currentBus.id
-      });
-    }
-    document.getElementById('hud-status').textContent = `📍 Broadcasting · ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-    updateBusMarker(lat, lng);
-    map.panTo([lat, lng], {animate:true, duration:0.5});
-    document.getElementById('s-speed').textContent = Math.round((pos.coords.speed||0)*3.6);
-  }, err => toast('⚠️ GPS: '+err.message), {enableHighAccuracy:true, maximumAge:2000, timeout:10000});
+    const {latitude:lat, longitude:lng, speed} = pos.coords;
+    const kmh = speed ? Math.round(speed*3.6) : 0;
 
-  toast('📍 Broadcasting location for '+currentBus.name);
+    // Reverse geocode area name using nominatim (free)
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
+      .then(r=>r.json()).then(data => {
+        const area = data.address?.suburb || data.address?.neighbourhood || data.address?.town || data.address?.city || 'En route';
+        if (db && currentBus) {
+          db.ref(`busko_live/${currentBus.id}`).set({
+            lat, lng, ts: Date.now(),
+            tracker: profile.name,
+            busId: currentBus.id,
+            speed: kmh,
+            area
+          });
+        }
+        document.getElementById('track-status').innerHTML = `Broadcasting: <b>${area} · ${kmh} km/h</b>`;
+        document.getElementById('hud-sub').textContent = `📍 ${area}`;
+      }).catch(() => {
+        if (db && currentBus) {
+          db.ref(`busko_live/${currentBus.id}`).set({
+            lat, lng, ts: Date.now(), tracker: profile.name, busId: currentBus.id, speed: kmh
+          });
+        }
+        document.getElementById('track-status').innerHTML = `Broadcasting: <b>${lat.toFixed(4)}, ${lng.toFixed(4)}</b>`;
+      });
+
+    updateBusMarker(lat, lng, '');
+    map.panTo([lat,lng],{animate:true,duration:.5});
+  }, err => toast('⚠️ GPS: '+err.message), {enableHighAccuracy:true, maximumAge:2000, timeout:15000});
+
+  toast('📍 Broadcasting for Bus '+currentBus.number);
 }
 
 function stopTracking() {
   tracking = false;
   if (watchId) { navigator.geolocation.clearWatch(watchId); watchId=null; }
+  if (db && currentBus) db.ref(`busko_live/${currentBus.id}`).remove();
   document.getElementById('track-btn').textContent = '📍 Start Broadcasting Location';
-  document.getElementById('track-btn').className = 'start';
-  document.getElementById('tracker-status-text').textContent = 'Not tracking';
-  if (db) db.ref(`busko/${currentBus.id}/location`).remove();
+  document.getElementById('track-btn').style.background = 'var(--yellow)';
+  document.getElementById('track-btn').style.color = '#000';
+  document.getElementById('track-status').innerHTML = 'Status: <b>Not broadcasting</b>';
   toast('Stopped broadcasting');
 }
 
-// ══ NOTIFICATIONS ══
-function requestNotify() {
-  if (!('Notification' in window)) { toast('⚠️ Notifications not supported'); return; }
-  Notification.requestPermission().then(p => {
-    if (p === 'granted') { notifyEnabled = true; toast('🔔 You\'ll be notified 5min before arrival!'); }
-    else toast('⚠️ Notification permission denied');
-  });
+// ══ EXIT ══
+function exitBus() {
+  stopTracking();
+  if (busMarker) { map.removeLayer(busMarker); busMarker=null; }
+  if (routeLine) { map.removeLayer(routeLine); routeLine=null; }
+  if (db && currentBus) db.ref(`busko_live/${currentBus.id}`).off();
+  busLatLng = null; currentBus = null; lastBusPos=null; lastBusTime=null;
+  showScreen('screen-buses');
+  renderBusList();
 }
 
-function checkNotify() {
-  if (!notifyEnabled || busLat === null) return;
-  const myStop = currentBus.stops[myStopIndex];
-  const dist = haversine(busLat, busLng, myStop.lat, myStop.lng);
-  const etaMin = Math.round((dist/1000)/30*60);
-  if (etaMin <= 5 && etaMin > 0) {
-    new Notification('🚌 BusKo', {
-      body: `${currentBus.name} arriving at ${myStop.name} in ~${etaMin} min!`,
-      icon: '🚌'
+// ══ ADMIN: ADD/EDIT BUS ══
+function openAddBus() {
+  editingBusId = null;
+  document.getElementById('add-bus-title').textContent = '➕ Add New Bus';
+  document.getElementById('save-bus-btn').textContent = 'Save Bus →';
+  ['new-bus-num','new-bus-route','new-bus-areas','new-bus-schedule'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('add-bus-modal').classList.add('open');
+}
+
+function editBus(busId) {
+  editingBusId = busId;
+  const b = allBuses[busId];
+  document.getElementById('add-bus-title').textContent = '✏️ Edit Bus';
+  document.getElementById('save-bus-btn').textContent = 'Update Bus →';
+  document.getElementById('new-bus-num').value = b.number||'';
+  document.getElementById('new-bus-route').value = b.route||'';
+  document.getElementById('new-bus-areas').value = b.areas||'';
+  document.getElementById('new-bus-schedule').value = b.schedule||'';
+  document.getElementById('add-bus-modal').classList.add('open');
+}
+
+function closeAddBus() { document.getElementById('add-bus-modal').classList.remove('open'); }
+
+function saveBus() {
+  const number = document.getElementById('new-bus-num').value.trim();
+  const route = document.getElementById('new-bus-route').value.trim();
+  const areas = document.getElementById('new-bus-areas').value.trim();
+  const schedule = document.getElementById('new-bus-schedule').value.trim();
+  if (!number || !route) { toast('⚠️ Bus number and route are required'); return; }
+
+  const busData = { number, route, areas, schedule, updatedAt: Date.now() };
+  const busId = editingBusId || 'bus_' + Date.now();
+
+  if (db) {
+    db.ref(`busko_buses/${busId}`).set(busData).then(() => {
+      toast(editingBusId ? '✅ Bus updated!' : '✅ Bus '+number+' added!');
+      closeAddBus();
+      renderAdminBusList();
     });
-    notifyEnabled = false; // only notify once
   }
 }
 
-// ══ SCHEDULE ══
-function renderSchedule() {
-  document.getElementById('schedule-list').innerHTML = currentBus.schedule.map((time, i) => `
-    <div class="schedule-row">
-      <div class="schedule-time">${time}</div>
-      <div class="schedule-stop">${currentBus.stops[0].name} → ${currentBus.stops[currentBus.stops.length-1].name}</div>
+function deleteBus(busId) {
+  if (!confirm('Delete this bus?')) return;
+  if (db) db.ref(`busko_buses/${busId}`).remove().then(() => toast('Deleted'));
+}
+
+function renderAdminBusList() {
+  const el = document.getElementById('admin-bus-list');
+  if (!el) return;
+  const buses = Object.entries(allBuses);
+  if (!buses.length) { el.innerHTML='<div class="empty-state"><div class="ei">🚌</div><p>No buses yet. Click + Add Bus to start.</p></div>'; return; }
+  el.innerHTML = buses.map(([id,b])=>`
+    <div class="pending-card">
+      <div class="pending-name">Bus ${b.number} — ${b.route||''}</div>
+      <div class="pending-meta">${b.areas||'No areas'}</div>
+      <div class="pending-meta" style="color:var(--yellow);">${b.schedule||'No schedule'}</div>
+      <div class="pending-actions">
+        <button class="btn btn-ghost btn-sm" onclick="editBus('${id}')">✏️ Edit</button>
+        <button class="btn btn-red btn-sm" onclick="deleteBus('${id}')">🗑 Delete</button>
+      </div>
     </div>
   `).join('');
 }
 
-function openSchedule() { document.getElementById('schedule-modal').classList.add('open'); }
-function closeSchedule() { document.getElementById('schedule-modal').classList.remove('open'); }
-function toggleStops() { document.getElementById('stops-panel').classList.toggle('open'); }
+// ══ SUGGESTIONS ══
+function openSuggestStop() { document.getElementById('suggest-modal').classList.add('open'); }
+function closeSuggestModal() { document.getElementById('suggest-modal').classList.remove('open'); }
 
-function exitBus() {
-  stopTracking();
-  if (busMarker) { map.removeLayer(busMarker); busMarker=null; }
-  stopMarkers.forEach(m=>map.removeLayer(m)); stopMarkers=[];
-  if (routeLine) { map.removeLayer(routeLine); routeLine=null; }
-  if (db && currentBus) db.ref(`busko/${currentBus.id}/location`).off();
-  currentBus = null; busLat=null; busLng=null;
-  showScreen('screen-buses');
+function submitSuggestion() {
+  const name = document.getElementById('suggest-name').value.trim();
+  const desc = document.getElementById('suggest-desc').value.trim();
+  if (!name) { toast('⚠️ Enter a stop name'); return; }
+  if (!db || !currentBus) return;
+  const key = 'sug_'+Date.now();
+  db.ref(`busko_suggestions/${key}`).set({
+    busId: currentBus.id, busNumber: currentBus.number,
+    stopName: name, description: desc,
+    by: profile.name, ts: Date.now(), status: 'pending'
+  }).then(() => { toast('✅ Suggestion submitted! Admin will review.'); closeSuggestModal(); });
+}
+
+function loadSuggestions() {
+  if (!db) return;
+  db.ref('busko_suggestions').orderByChild('status').equalTo('pending').on('value', snap => {
+    const el = document.getElementById('suggestions-list');
+    if (!el) return;
+    if (!snap.exists()) { el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:10px;">No pending suggestions.</div>'; return; }
+    el.innerHTML = Object.entries(snap.val()).map(([id,s])=>`
+      <div class="pending-card">
+        <div class="pending-name">${s.stopName}</div>
+        <div class="pending-meta">Bus ${s.busNumber} · by ${s.by}</div>
+        <div class="pending-meta">${s.description||''}</div>
+        <div class="pending-actions">
+          <button class="btn btn-green btn-sm" onclick="approveSuggestion('${id}')">✅ Approve</button>
+          <button class="btn btn-red btn-sm" onclick="rejectSuggestion('${id}')">❌ Reject</button>
+        </div>
+      </div>
+    `).join('');
+  });
+}
+
+function approveSuggestion(id) {
+  if (!db) return;
+  db.ref(`busko_suggestions/${id}`).update({status:'approved'}).then(() => toast('✅ Approved!'));
+}
+function rejectSuggestion(id) {
+  if (!db) return;
+  db.ref(`busko_suggestions/${id}`).update({status:'rejected'}).then(() => toast('Rejected'));
 }
 
 // ══ HELPERS ══
