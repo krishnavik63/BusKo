@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#1a0a2e"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>BusKo — Sathyabama Bus Tracker</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d0d1a;--s1:#13132a;--s2:#1a1a35;--s3:#22223d;--border:#2a2a4a;
+  --text:#f0f0ff;--muted:#6666aa;--muted2:#33334a;
+  --purple:#7c3aed;--purple-dim:#1a0a35;--purple-light:#a78bfa;
+  --yellow:#fbbf24;--yellow-dim:#2a1a00;
+  --green:#10b981;--green-dim:#052a1a;
+  --red:#ef4444;--red-dim:#2a0808;
+  --blue:#3b82f6;--blue-dim:#0a1535;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+  --r:14px;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);}
+
+/* MAP */
+#map{position:fixed;inset:0;z-index:1;}
+.leaflet-container{background:#0d0d1a;}
+.leaflet-tile{filter:brightness(.3) saturate(.5) hue-rotate(200deg);}
+.leaflet-control-zoom a{background:var(--s2)!important;color:var(--text)!important;border-color:var(--border)!important;}
+.leaflet-control-attribution{display:none;}
+
+/* SCREENS */
+.screen{position:fixed;inset:0;z-index:400;display:none;flex-direction:column;background:var(--bg);overflow-y:auto;}
+.screen.active{display:flex;}
+
+/* SPLASH */
+#screen-splash{align-items:center;justify-content:center;padding:32px 24px;text-align:center;}
+.college-badge{background:var(--purple-dim);border:1px solid var(--purple);border-radius:10px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--purple-light);letter-spacing:.05em;margin-bottom:20px;display:inline-block;}
+.app-icon{font-size:64px;margin-bottom:12px;}
+.app-name{font-size:36px;font-weight:700;letter-spacing:-0.03em;color:var(--text);margin-bottom:4px;}
+.app-name span{color:var(--yellow);}
+.app-tag{font-size:14px;color:var(--muted);margin-bottom:36px;}
+.splash-form{width:100%;max-width:340px;text-align:left;}
+.field{margin-bottom:14px;}
+.field label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:6px;}
+.field input,.field select{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:15px;padding:12px 14px;font-family:var(--font);outline:none;transition:border-color .2s;}
+.field input:focus,.field select:focus{border-color:var(--purple);}
+.field select option{background:var(--s2);}
+.role-row{display:flex;gap:10px;}
+.role-opt{flex:1;padding:14px 10px;text-align:center;border-radius:10px;border:1px solid var(--border);background:var(--s2);cursor:pointer;transition:all .15s;}
+.role-opt.active{background:var(--purple-dim);border-color:var(--purple);}
+.role-opt .role-icon{font-size:24px;margin-bottom:4px;}
+.role-opt .role-label{font-size:13px;font-weight:600;}
+.role-opt .role-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.btn{width:100%;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;transition:transform .1s;margin-bottom:8px;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--purple);color:#fff;}
+.btn-ghost{background:var(--s2);color:var(--text);border:1px solid var(--border);}
+.btn-yellow{background:var(--yellow);color:#000;}
+.btn-red{background:var(--red-dim);color:var(--red);border:1px solid #3a1010;}
+.btn-green{background:var(--green-dim);color:var(--green);border:1px solid #0a3a1a;}
+.btn-sm{padding:8px 14px;font-size:13px;font-weight:700;border-radius:8px;width:auto;}
+
+/* BUS SELECT SCREEN */
+#screen-buses{padding:0;}
+.screen-header{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--s1);position:sticky;top:0;z-index:10;}
+.screen-header h2{font-size:18px;font-weight:700;flex:1;}
+.back-btn{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px;}
+.bus-card{margin:12px 16px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:border-color .2s;}
+.bus-card:hover,.bus-card:active{border-color:var(--purple);}
+.bus-card-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.bus-number{width:44px;height:44px;border-radius:10px;background:var(--purple-dim);border:1px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--purple-light);flex-shrink:0;}
+.bus-name{font-size:16px;font-weight:600;}
+.bus-route{font-size:12px;color:var(--muted);margin-top:2px;}
+.bus-status{margin-left:auto;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;}
+.status-live{background:var(--green-dim);color:var(--green);}
+.status-waiting{background:var(--yellow-dim);color:var(--yellow);}
+.status-offline{background:var(--muted2);color:var(--muted);}
+.bus-stops-row{display:flex;gap:6px;flex-wrap:wrap;}
+.stop-chip{font-size:11px;background:var(--s3);border:1px solid var(--border);border-radius:99px;padding:3px 10px;color:var(--muted);}
+
+/* GAME HUD */
+#hud-top{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(13,13,26,.92);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);padding:10px 14px;display:none;align-items:center;gap:10px;}
+.hud-bus-num{width:36px;height:36px;border-radius:8px;background:var(--purple-dim);border:1px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--purple-light);flex-shrink:0;}
+.hud-bus-info{flex:1;}
+.hud-bus-name{font-size:14px;font-weight:700;}
+.hud-bus-status{font-size:11px;color:var(--muted);}
+.hud-right{display:flex;gap:8px;align-items:center;}
+.hud-btn{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;}
+
+/* STATS BAR */
+#stats-bar{position:fixed;top:57px;left:0;right:0;z-index:200;display:none;flex;background:rgba(13,13,26,.9);border-bottom:1px solid var(--border);backdrop-filter:blur(8px);}
+.stat{flex:1;text-align:center;padding:8px 4px;border-right:1px solid var(--border);}
+.stat:last-child{border-right:none;}
+.stat-val{font-size:15px;font-weight:700;font-family:var(--mono);color:var(--yellow);}
+.stat-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:1px;}
+
+/* STOPS PANEL */
+#stops-panel{position:fixed;left:0;top:0;bottom:0;width:240px;z-index:300;background:rgba(13,13,26,.97);border-right:1px solid var(--border);backdrop-filter:blur(16px);transform:translateX(-100%);transition:transform .3s cubic-bezier(.25,1,.5,1);display:flex;flex-direction:column;}
+#stops-panel.open{transform:translateX(0);}
+#sp-header{padding:14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+#sp-header h3{font-size:14px;font-weight:700;color:var(--yellow);}
+#sp-close{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;}
+#stops-list{flex:1;overflow-y:auto;padding:8px;}
+.stop-item{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:8px;margin-bottom:4px;cursor:pointer;transition:background .15s;}
+.stop-item:hover{background:var(--s2);}
+.stop-item.next{background:var(--yellow-dim);border:1px solid #3a2a00;}
+.stop-item.passed{opacity:.4;}
+.stop-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.stop-line{width:2px;height:20px;background:var(--border);margin:0 auto;display:block;}
+.stop-col{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+.stop-name{font-size:13px;font-weight:500;flex:1;}
+.stop-eta{font-size:11px;font-family:var(--mono);color:var(--muted);margin-left:auto;}
+
+/* TRACKER BOTTOM */
+#bottom-tracker{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(13,13,26,.93);border-top:1px solid var(--border);backdrop-filter:blur(12px);padding:14px;display:none;}
+#tracker-status{text-align:center;margin-bottom:10px;font-size:13px;color:var(--muted);}
+#tracker-status span{color:var(--green);font-weight:700;}
+#track-btn{width:100%;padding:15px;font-size:16px;font-weight:700;font-family:var(--font);border:none;border-radius:var(--r);cursor:pointer;transition:transform .1s;}
+#track-btn:active{transform:scale(.97);}
+#track-btn.tracking{background:var(--red);color:#fff;}
+#track-btn.start{background:var(--yellow);color:#000;}
+
+/* WATCHER BOTTOM */
+#bottom-watcher{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(13,13,26,.93);border-top:1px solid var(--border);backdrop-filter:blur(12px);padding:14px;display:none;}
+.arrival-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;}
+.arrival-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.arrival-row{display:flex;align-items:baseline;gap:8px;}
+.arrival-time{font-size:36px;font-weight:700;font-family:var(--mono);color:var(--yellow);}
+.arrival-unit{font-size:14px;color:var(--muted);}
+.arrival-stop{font-size:13px;color:var(--muted);margin-top:4px;}
+.bus-dist{font-size:13px;color:var(--text);margin-top:4px;font-family:var(--mono);}
+.notify-btn{width:100%;background:var(--purple-dim);color:var(--purple-light);border:1px solid var(--purple);border-radius:10px;padding:11px;font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;}
+
+/* STOPS TOGGLE */
+#stops-toggle{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:200;background:rgba(13,13,26,.88);border:1px solid var(--border);border-left:none;border-radius:0 var(--r) var(--r) 0;padding:10px 8px;cursor:pointer;font-size:11px;font-weight:700;color:var(--yellow);writing-mode:vertical-rl;letter-spacing:.1em;backdrop-filter:blur(8px);display:none;}
+
+/* NO BUS LIVE */
+.no-live-card{margin:16px;background:var(--yellow-dim);border:1px solid #3a2a00;border-radius:var(--r);padding:16px;text-align:center;}
+.no-live-card .icon{font-size:32px;margin-bottom:8px;}
+.no-live-card p{font-size:13px;color:var(--yellow);line-height:1.5;}
+
+/* TOAST */
+#toast{position:fixed;bottom:120px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--s3);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;color:var(--text);transition:transform .3s cubic-bezier(.25,1,.5,1),opacity .3s;z-index:999;white-space:nowrap;opacity:0;pointer-events:none;}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* GPS PULSE */
+.gps-dot{width:16px;height:16px;border-radius:50%;border:3px solid rgba(255,255,255,.3);animation:gps 2s infinite;}
+@keyframes gps{0%{box-shadow:0 0 0 0 rgba(251,191,36,.5);}70%{box-shadow:0 0 0 12px rgba(251,191,36,0);}100%{box-shadow:0 0 0 0 rgba(251,191,36,0);}}
+
+/* SCHEDULE MODAL */
+#schedule-modal{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+#schedule-modal.open{display:flex;}
+.schedule-sheet{background:var(--s1);border:1px solid var(--border);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:70vh;overflow-y:auto;}
+.schedule-sheet h3{font-size:16px;font-weight:700;margin-bottom:14px;color:var(--yellow);}
+.schedule-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.schedule-row:last-child{border-bottom:none;}
+.schedule-time{font-family:var(--mono);font-weight:600;color:var(--text);}
+.schedule-stop{color:var(--muted);font-size:13px;}
+</style>
+</head>
+<body>
+
+<!-- MAP -->
+<div id="map"></div>
+
+<!-- ══ SPLASH ══ -->
+<div class="screen active" id="screen-splash">
+  <div class="college-badge">🎓 Sathyabama Institute of Science & Technology</div>
+  <div class="app-icon">🚌</div>
+  <div class="app-name">Bus<span>Ko</span></div>
+  <div class="app-tag">Live college bus tracker</div>
+  <div class="splash-form">
+    <div class="field"><label>Your Name</label><input type="text" id="user-name" placeholder="e.g. Arjun" maxlength="20"/></div>
+    <div class="field">
+      <label>I am a…</label>
+      <div class="role-row">
+        <div class="role-opt active" id="role-student" onclick="setRole('student')">
+          <div class="role-icon">🎒</div>
+          <div class="role-label">Student</div>
+          <div class="role-sub">Track buses</div>
+        </div>
+        <div class="role-opt" id="role-tracker" onclick="setRole('tracker')">
+          <div class="role-icon">📍</div>
+          <div class="role-label">Tracker</div>
+          <div class="role-sub">I'm on the bus</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="saveProfile()">Continue →</button>
+  </div>
+</div>
+
+<!-- ══ BUS SELECT ══ -->
+<div class="screen" id="screen-buses">
+  <div class="screen-header">
+    <button class="back-btn" onclick="showScreen('screen-splash')">←</button>
+    <h2>🚌 Select Your Bus</h2>
+    <div id="live-count" style="font-size:12px;color:var(--green);font-family:var(--mono);"></div>
+  </div>
+  <div id="bus-list"></div>
+</div>
+
+<!-- ══ TRACKER: BUS SELECT ══ -->
+<div class="screen" id="screen-tracker-select">
+  <div class="screen-header">
+    <button class="back-btn" onclick="showScreen('screen-splash')">←</button>
+    <h2>📍 Which bus are you on?</h2>
+  </div>
+  <div id="tracker-bus-list"></div>
+</div>
+
+<!-- ══ GAME HUD ══ -->
+<div id="hud-top">
+  <div class="hud-bus-num" id="hud-num">B1</div>
+  <div class="hud-bus-info">
+    <div class="hud-bus-name" id="hud-name">Bus 1</div>
+    <div class="hud-bus-status" id="hud-status">Connecting…</div>
+  </div>
+  <div class="hud-right">
+    <div class="hud-btn" onclick="toggleStops()">🗺 Stops</div>
+    <div class="hud-btn" onclick="openSchedule()">🕐 Schedule</div>
+    <div class="hud-btn" onclick="exitBus()">✕</div>
+  </div>
+</div>
+
+<div id="stats-bar" style="display:none;">
+  <div class="stat"><div class="stat-val" id="s-dist">—</div><div class="stat-label">bus distance</div></div>
+  <div class="stat"><div class="stat-val" id="s-eta">—</div><div class="stat-label">arrival (min)</div></div>
+  <div class="stat"><div class="stat-val" id="s-speed">—</div><div class="stat-label">km/h</div></div>
+  <div class="stat"><div class="stat-val" id="s-next">—</div><div class="stat-label">next stop</div></div>
+</div>
+
+<!-- STOPS TOGGLE -->
+<div id="stops-toggle" onclick="toggleStops()">STOPS</div>
+
+<!-- STOPS PANEL -->
+<div id="stops-panel">
+  <div id="sp-header"><h3>🚏 Route Stops</h3><button id="sp-close" onclick="toggleStops()">✕</button></div>
+  <div id="stops-list"></div>
+</div>
+
+<!-- TRACKER BOTTOM -->
+<div id="bottom-tracker">
+  <div id="tracker-status">Status: <span id="tracker-status-text">Not tracking</span></div>
+  <button id="track-btn" class="start" onclick="toggleTracking()">📍 Start Broadcasting Location</button>
+</div>
+
+<!-- WATCHER BOTTOM -->
+<div id="bottom-watcher">
+  <div class="arrival-card">
+    <div class="arrival-label">Estimated arrival at your stop</div>
+    <div class="arrival-row">
+      <div class="arrival-time" id="eta-minutes">—</div>
+      <div class="arrival-unit">min</div>
+    </div>
+    <div class="arrival-stop" id="eta-stop">Select your stop below</div>
+    <div class="bus-dist" id="bus-dist-text">Bus location: waiting…</div>
+  </div>
+  <button class="notify-btn" onclick="requestNotify()">🔔 Notify me 5 min before arrival</button>
+</div>
+
+<!-- STOPS PANEL -->
+<div id="schedule-modal">
+  <div class="schedule-sheet">
+    <h3>📅 Bus Schedule</h3>
+    <div id="schedule-list"></div>
+    <button class="btn btn-ghost" style="margin-top:12px;" onclick="closeSchedule()">Close</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══ FIREBASE CONFIG ══
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDXU236y-jZf9BxQja1VpheAAKfMgaydeM",
+  authDomain: "veloclash.firebaseapp.com",
+  databaseURL: "https://veloclash-default-rtdb.firebaseio.com",
+  projectId: "veloclash",
+  storageBucket: "veloclash.firebasestorage.app",
+  messagingSenderId: "693963602196",
+  appId: "1:693963602196:web:3ad1100bfa864ddd516a01"
+};
+
+// ══ SATHYABAMA BUSES ══
+const BUSES = [
+  {
+    id:'B1', name:'Bus 1', route:'Tambaram → Sathyabama',
+    stops:[
+      {name:'Tambaram Station', lat:12.9249, lng:80.1000},
+      {name:'Chromepet', lat:12.9516, lng:80.1426},
+      {name:'Pallavaram', lat:12.9675, lng:80.1492},
+      {name:'Vandalur', lat:12.8897, lng:80.0827},
+      {name:'Sathyabama Gate', lat:12.8726, lng:80.2209},
+    ],
+    schedule:['7:00 AM','8:00 AM','9:00 AM','4:00 PM','5:00 PM','6:00 PM']
+  },
+  {
+    id:'B2', name:'Bus 2', route:'Velachery → Sathyabama',
+    stops:[
+      {name:'Velachery', lat:12.9815, lng:80.2180},
+      {name:'Medavakkam', lat:12.9279, lng:80.1948},
+      {name:'Sholinganallur', lat:12.9010, lng:80.2279},
+      {name:'Perumbakkam', lat:12.9072, lng:80.1996},
+      {name:'Sathyabama Gate', lat:12.8726, lng:80.2209},
+    ],
+    schedule:['7:15 AM','8:15 AM','9:15 AM','4:15 PM','5:15 PM','6:15 PM']
+  },
+  {
+    id:'B3', name:'Bus 3', route:'Adyar → Sathyabama',
+    stops:[
+      {name:'Adyar', lat:13.0012, lng:80.2565},
+      {name:'Besant Nagar', lat:12.9987, lng:80.2707},
+      {name:'Thiruvanmiyur', lat:12.9827, lng:80.2595},
+      {name:'Karapakkam', lat:12.9361, lng:80.2280},
+      {name:'Sathyabama Gate', lat:12.8726, lng:80.2209},
+    ],
+    schedule:['7:30 AM','8:30 AM','9:30 AM','4:30 PM','5:30 PM','6:30 PM']
+  },
+  {
+    id:'B4', name:'Bus 4', route:'Porur → Sathyabama',
+    stops:[
+      {name:'Porur', lat:13.0358, lng:80.1573},
+      {name:'Maduravoyal', lat:13.0683, lng:80.1711},
+      {name:'Ambattur', lat:13.0983, lng:80.1597},
+      {name:'Poonamallee', lat:13.0461, lng:80.0962},
+      {name:'Sathyabama Gate', lat:12.8726, lng:80.2209},
+    ],
+    schedule:['7:45 AM','8:45 AM','9:45 AM','4:45 PM','5:45 PM','6:45 PM']
+  },
+];
+
+// ══ STATE ══
+let db, profile = {name:'', role:'student'};
+let currentBus = null;
+let tracking = false;
+let watchId = null;
+let busMarker = null;
+let myStopIndex = 0;
+let busLat = null, busLng = null;
+let lastBusLat = null, lastBusLng = null;
+let lastBusTime = null;
+let stopMarkers = [];
+let routeLine = null;
+let notifyEnabled = false;
+let uid = 'u_' + Math.random().toString(36).slice(2,8);
+
+// ══ INIT ══
+window.addEventListener('load', function() {
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    toast('🔥 Connected!');
+  } catch(e) {
+    console.warn('Firebase failed:', e);
+    toast('⚠️ Offline mode');
+  }
+
+  map = L.map('map', {center:[12.8726,80.2209], zoom:12, zoomControl:false, attributionControl:false});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+  L.control.zoom({position:'bottomright'}).addTo(map);
+
+  buildBusLists();
+  listenToAllBuses();
+
+  window.saveProfile = saveProfile;
+  window.setRole = setRole;
+  window.showScreen = showScreen;
+  window.selectBusAsStudent = selectBusAsStudent;
+  window.selectBusAsTracker = selectBusAsTracker;
+  window.toggleTracking = toggleTracking;
+  window.toggleStops = toggleStops;
+  window.exitBus = exitBus;
+  window.openSchedule = openSchedule;
+  window.closeSchedule = closeSchedule;
+  window.setMyStop = setMyStop;
+  window.requestNotify = requestNotify;
+});
+
+let map;
+
+// ══ PROFILE ══
+function setRole(r) {
+  profile.role = r;
+  document.getElementById('role-student').classList.toggle('active', r==='student');
+  document.getElementById('role-tracker').classList.toggle('active', r==='tracker');
+}
+
+function saveProfile() {
+  const name = document.getElementById('user-name').value.trim();
+  if (!name) { toast('⚠️ Enter your name'); return; }
+  profile.name = name;
+  if (profile.role === 'student') showScreen('screen-buses');
+  else showScreen('screen-tracker-select');
+}
+
+// ══ SCREENS ══
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+  document.getElementById('hud-top').style.display = 'none';
+  document.getElementById('stats-bar').style.display = 'none';
+  document.getElementById('bottom-tracker').style.display = 'none';
+  document.getElementById('bottom-watcher').style.display = 'none';
+  document.getElementById('stops-toggle').style.display = 'none';
+}
+
+function showGameHUD() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('hud-top').style.display = 'flex';
+  document.getElementById('stats-bar').style.display = 'flex';
+  document.getElementById('stops-toggle').style.display = 'block';
+  if (profile.role === 'tracker') {
+    document.getElementById('bottom-tracker').style.display = 'block';
+  } else {
+    document.getElementById('bottom-watcher').style.display = 'block';
+  }
+}
+
+// ══ BUS LISTS ══
+function buildBusLists() {
+  // Student view
+  const studentList = document.getElementById('bus-list');
+  studentList.innerHTML = BUSES.map(b => `
+    <div class="bus-card" onclick="selectBusAsStudent('${b.id}')">
+      <div class="bus-card-top">
+        <div class="bus-number">${b.id}</div>
+        <div>
+          <div class="bus-name">${b.name}</div>
+          <div class="bus-route">${b.route}</div>
+        </div>
+        <div class="bus-status status-offline" id="status-${b.id}">Offline</div>
+      </div>
+      <div class="bus-stops-row">
+        ${b.stops.map(s=>`<div class="stop-chip">📍 ${s.name}</div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  // Tracker view
+  const trackerList = document.getElementById('tracker-bus-list');
+  trackerList.innerHTML = BUSES.map(b => `
+    <div class="bus-card" onclick="selectBusAsTracker('${b.id}')">
+      <div class="bus-card-top">
+        <div class="bus-number">${b.id}</div>
+        <div>
+          <div class="bus-name">${b.name}</div>
+          <div class="bus-route">${b.route}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ══ LISTEN TO ALL BUSES (for status badges) ══
+function listenToAllBuses() {
+  if (!db) return;
+  BUSES.forEach(b => {
+    db.ref(`busko/${b.id}/location`).on('value', snap => {
+      const el = document.getElementById('status-'+b.id);
+      if (!el) return;
+      if (snap.exists()) {
+        const d = snap.val();
+        const age = Date.now() - (d.ts||0);
+        if (age < 30000) {
+          el.textContent = '● Live';
+          el.className = 'bus-status status-live';
+        } else {
+          el.textContent = '◌ Recent';
+          el.className = 'bus-status status-waiting';
+        }
+      } else {
+        el.textContent = 'Offline';
+        el.className = 'bus-status status-offline';
+      }
+    });
+  });
+}
+
+// ══ SELECT BUS (STUDENT) ══
+function selectBusAsStudent(busId) {
+  currentBus = BUSES.find(b => b.id === busId);
+  profile.role = 'student';
+  enterBusView();
+}
+
+function selectBusAsTracker(busId) {
+  currentBus = BUSES.find(b => b.id === busId);
+  profile.role = 'tracker';
+  enterBusView();
+}
+
+function enterBusView() {
+  showGameHUD();
+  document.getElementById('hud-num').textContent = currentBus.id;
+  document.getElementById('hud-name').textContent = currentBus.name;
+  document.getElementById('hud-status').textContent = currentBus.route;
+
+  // Draw route on map
+  drawRoute();
+
+  // Center map on route
+  const bounds = L.latLngBounds(currentBus.stops.map(s => [s.lat, s.lng]));
+  map.fitBounds(bounds, {padding:[40,40]});
+
+  // Render stops panel
+  renderStopsPanel();
+
+  // Render stop selector for student
+  if (profile.role === 'student') {
+    renderStopSelector();
+    listenToBus();
+  }
+
+  // Render schedule
+  renderSchedule();
+}
+
+// ══ DRAW ROUTE ══
+function drawRoute() {
+  // Clear previous
+  stopMarkers.forEach(m => map.removeLayer(m));
+  stopMarkers = [];
+  if (routeLine) map.removeLayer(routeLine);
+
+  const latlngs = currentBus.stops.map(s => [s.lat, s.lng]);
+  routeLine = L.polyline(latlngs, {color:'#7c3aed', weight:3, opacity:.7, dashArray:'8,6'}).addTo(map);
+
+  currentBus.stops.forEach((stop, i) => {
+    const isLast = i === currentBus.stops.length - 1;
+    const icon = L.divIcon({
+      className:'',
+      html:`<div style="background:${isLast?'#fbbf24':'#7c3aed'};width:${isLast?14:10}px;height:${isLast?14:10}px;border-radius:50%;border:2px solid white;"></div>`,
+      iconSize:[14,14], iconAnchor:[7,7]
+    });
+    const m = L.marker([stop.lat, stop.lng], {icon})
+      .addTo(map)
+      .bindTooltip(stop.name, {permanent:false, direction:'top'});
+    stopMarkers.push(m);
+  });
+}
+
+// ══ STOPS PANEL ══
+function renderStopsPanel() {
+  const list = document.getElementById('stops-list');
+  list.innerHTML = currentBus.stops.map((stop, i) => `
+    <div class="stop-col">
+      <div class="stop-item" id="stop-item-${i}" onclick="focusStop(${i})">
+        <div style="display:flex;flex-direction:column;align-items:center;margin-right:4px;">
+          <div class="stop-dot" style="background:${i===currentBus.stops.length-1?'#fbbf24':'#7c3aed'}"></div>
+          ${i < currentBus.stops.length-1 ? '<div style="width:2px;height:20px;background:var(--border);margin-top:2px;"></div>' : ''}
+        </div>
+        <div class="stop-name">${stop.name}</div>
+        <div class="stop-eta" id="stop-eta-${i}">—</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function focusStop(i) {
+  const stop = currentBus.stops[i];
+  map.setView([stop.lat, stop.lng], 15, {animate:true});
+  toggleStops();
+}
+
+// ══ STOP SELECTOR (STUDENT) ══
+function renderStopSelector() {
+  const el = document.getElementById('eta-stop');
+  el.innerHTML = `My stop: <select onchange="setMyStop(this.value)" style="background:var(--s2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:4px 8px;font-size:12px;margin-left:6px;">
+    ${currentBus.stops.map((s,i)=>`<option value="${i}">${s.name}</option>`).join('')}
+  </select>`;
+}
+
+function setMyStop(idx) {
+  myStopIndex = parseInt(idx);
+  updateETA();
+}
+
+// ══ LISTEN TO BUS (STUDENT) ══
+function listenToBus() {
+  if (!db) return;
+  db.ref(`busko/${currentBus.id}/location`).on('value', snap => {
+    if (!snap.exists()) {
+      document.getElementById('hud-status').textContent = '⚠️ Bus not live yet';
+      document.getElementById('bus-dist-text').textContent = 'Bus not broadcasting yet';
+      document.getElementById('eta-minutes').textContent = '—';
+      return;
+    }
+    const d = snap.val();
+    busLat = d.lat; busLng = d.lng;
+    const age = Math.round((Date.now() - d.ts) / 1000);
+
+    document.getElementById('hud-status').textContent = `● Live · updated ${age}s ago`;
+
+    // Update bus marker
+    updateBusMarker(d.lat, d.lng);
+
+    // Speed
+    if (lastBusLat && lastBusTime) {
+      const dist = haversine(lastBusLat, lastBusLng, d.lat, d.lng);
+      const elapsed = (d.ts - lastBusTime) / 3600000;
+      const spd = elapsed > 0 ? Math.round(dist/1000/elapsed) : 0;
+      document.getElementById('s-speed').textContent = spd;
+    }
+    lastBusLat = d.lat; lastBusLng = d.lng; lastBusTime = d.ts;
+
+    // Distance from bus to college gate
+    const gate = currentBus.stops[currentBus.stops.length-1];
+    const distToGate = haversine(d.lat, d.lng, gate.lat, gate.lng);
+    document.getElementById('s-dist').textContent = (distToGate/1000).toFixed(1)+'km';
+    document.getElementById('bus-dist-text').textContent = `Bus is ${(distToGate/1000).toFixed(1)}km away`;
+
+    updateETA();
+    updateStopETAs();
+    checkNotify();
+  });
+}
+
+function updateBusMarker(lat, lng) {
+  if (!busMarker) {
+    const icon = L.divIcon({
+      className:'',
+      html:`<div style="background:#fbbf24;width:28px;height:28px;border-radius:50%;border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 10px rgba(251,191,36,.5);">🚌</div>`,
+      iconSize:[28,28], iconAnchor:[14,14]
+    });
+    busMarker = L.marker([lat,lng],{icon,zIndexOffset:1000}).addTo(map);
+    busMarker.bindTooltip(currentBus.name,{permanent:false,direction:'top'});
+  } else {
+    busMarker.setLatLng([lat,lng]);
+  }
+}
+
+function updateETA() {
+  if (busLat === null) return;
+  const myStop = currentBus.stops[myStopIndex];
+  const dist = haversine(busLat, busLng, myStop.lat, myStop.lng);
+  // Assume avg 30kmh in city
+  const etaMin = Math.round((dist/1000)/30*60);
+  document.getElementById('eta-minutes').textContent = etaMin;
+  document.getElementById('s-eta').textContent = etaMin;
+  // Next stop
+  let nearest = currentBus.stops[0], minD = Infinity;
+  currentBus.stops.forEach(s => {
+    const d = haversine(busLat, busLng, s.lat, s.lng);
+    if (d < minD) { minD=d; nearest=s; }
+  });
+  document.getElementById('s-next').textContent = nearest.name.split(' ')[0];
+}
+
+function updateStopETAs() {
+  if (busLat === null) return;
+  currentBus.stops.forEach((stop, i) => {
+    const dist = haversine(busLat, busLng, stop.lat, stop.lng);
+    const etaMin = Math.round((dist/1000)/30*60);
+    const el = document.getElementById('stop-eta-'+i);
+    if (el) el.textContent = etaMin+'min';
+  });
+}
+
+// ══ TRACKER ══
+function toggleTracking() {
+  tracking ? stopTracking() : startTracking();
+}
+
+function startTracking() {
+  if (!navigator.geolocation) { toast('⚠️ GPS not available'); return; }
+  tracking = true;
+  document.getElementById('track-btn').textContent = '🛑 Stop Broadcasting';
+  document.getElementById('track-btn').className = 'tracking';
+  document.getElementById('tracker-status-text').textContent = 'Broadcasting live 🟢';
+
+  watchId = navigator.geolocation.watchPosition(pos => {
+    const {latitude:lat, longitude:lng} = pos.coords;
+    if (db) {
+      db.ref(`busko/${currentBus.id}/location`).set({
+        lat, lng, ts: Date.now(),
+        tracker: profile.name,
+        busId: currentBus.id
+      });
+    }
+    document.getElementById('hud-status').textContent = `📍 Broadcasting · ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    updateBusMarker(lat, lng);
+    map.panTo([lat, lng], {animate:true, duration:0.5});
+    document.getElementById('s-speed').textContent = Math.round((pos.coords.speed||0)*3.6);
+  }, err => toast('⚠️ GPS: '+err.message), {enableHighAccuracy:true, maximumAge:2000, timeout:10000});
+
+  toast('📍 Broadcasting location for '+currentBus.name);
+}
+
+function stopTracking() {
+  tracking = false;
+  if (watchId) { navigator.geolocation.clearWatch(watchId); watchId=null; }
+  document.getElementById('track-btn').textContent = '📍 Start Broadcasting Location';
+  document.getElementById('track-btn').className = 'start';
+  document.getElementById('tracker-status-text').textContent = 'Not tracking';
+  if (db) db.ref(`busko/${currentBus.id}/location`).remove();
+  toast('Stopped broadcasting');
+}
+
+// ══ NOTIFICATIONS ══
+function requestNotify() {
+  if (!('Notification' in window)) { toast('⚠️ Notifications not supported'); return; }
+  Notification.requestPermission().then(p => {
+    if (p === 'granted') { notifyEnabled = true; toast('🔔 You\'ll be notified 5min before arrival!'); }
+    else toast('⚠️ Notification permission denied');
+  });
+}
+
+function checkNotify() {
+  if (!notifyEnabled || busLat === null) return;
+  const myStop = currentBus.stops[myStopIndex];
+  const dist = haversine(busLat, busLng, myStop.lat, myStop.lng);
+  const etaMin = Math.round((dist/1000)/30*60);
+  if (etaMin <= 5 && etaMin > 0) {
+    new Notification('🚌 BusKo', {
+      body: `${currentBus.name} arriving at ${myStop.name} in ~${etaMin} min!`,
+      icon: '🚌'
+    });
+    notifyEnabled = false; // only notify once
+  }
+}
+
+// ══ SCHEDULE ══
+function renderSchedule() {
+  document.getElementById('schedule-list').innerHTML = currentBus.schedule.map((time, i) => `
+    <div class="schedule-row">
+      <div class="schedule-time">${time}</div>
+      <div class="schedule-stop">${currentBus.stops[0].name} → ${currentBus.stops[currentBus.stops.length-1].name}</div>
+    </div>
+  `).join('');
+}
+
+function openSchedule() { document.getElementById('schedule-modal').classList.add('open'); }
+function closeSchedule() { document.getElementById('schedule-modal').classList.remove('open'); }
+function toggleStops() { document.getElementById('stops-panel').classList.toggle('open'); }
+
+function exitBus() {
+  stopTracking();
+  if (busMarker) { map.removeLayer(busMarker); busMarker=null; }
+  stopMarkers.forEach(m=>map.removeLayer(m)); stopMarkers=[];
+  if (routeLine) { map.removeLayer(routeLine); routeLine=null; }
+  if (db && currentBus) db.ref(`busko/${currentBus.id}/location`).off();
+  currentBus = null; busLat=null; busLng=null;
+  showScreen('screen-buses');
+}
+
+// ══ HELPERS ══
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+let toastT;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),2600);
+}
+</script>
+</body>
+</html>
