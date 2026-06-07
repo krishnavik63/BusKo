@@ -79,6 +79,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .bus-status{font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;flex-shrink:0;}
 .s-live{background:var(--green-dim);color:var(--green);}
 .s-offline{background:var(--muted2);color:var(--muted);}
+.s-notracker{background:var(--yellow-dim);color:var(--yellow);}
+.s-notrunning{background:var(--red-dim);color:var(--red);}
 .bus-meta{display:flex;gap:8px;flex-wrap:wrap;}
 .meta-chip{font-size:11px;background:var(--s3);border:1px solid var(--border);border-radius:99px;padding:3px 10px;color:var(--muted);}
 
@@ -371,6 +373,7 @@ window.addEventListener('load', function() {
   window.submitSuggestion = submitSuggestion;
   window.approveSuggestion = approveSuggestion;
   window.rejectSuggestion = rejectSuggestion;
+  window.toggleRunning = toggleRunning;
 
   if (profile.name) {
     if (profile.role === 'admin') showScreen('screen-admin-login');
@@ -467,25 +470,38 @@ function renderBusList() {
   });
 
   if (!buses.length) {
-    container.innerHTML = `<div class="empty-state"><div class="ei">🚌</div><p>${Object.keys(allBuses).length === 0 ? 'No buses added yet.\nAdmin needs to add buses first.' : 'No buses match your search.'}</p></div>`;
+    container.innerHTML = `<div class="empty-state"><div class="ei">🚌</div><p>${Object.keys(allBuses).length === 0 ? 'No buses added yet. Admin needs to add buses first.' : 'No buses match your search.'}</p></div>`;
     return;
   }
 
-  // Check live statuses
+  const today = new Date().toISOString().slice(0,10); // YYYY-MM-DD
+
   if (db) {
-    db.ref('busko_live').once('value', snap => {
-      const liveData = snap.val() || {};
+    Promise.all([
+      db.ref('busko_live').once('value'),
+      db.ref('busko_schedule/'+today).once('value')
+    ]).then(([liveSnap, schedSnap]) => {
+      const liveData = liveSnap.val() || {};
+      const schedData = schedSnap.val() || {};
       container.innerHTML = buses.map(([id, b]) => {
         const live = liveData[id] && (Date.now()-(liveData[id].ts||0)) < 30000;
+        const isRunning = schedData[id] === true;
+        const isNotRunning = schedData[id] === false;
+        let statusClass, statusText;
+        if (live) { statusClass='s-live'; statusText='● Live'; }
+        else if (isNotRunning) { statusClass='s-notrunning'; statusText='⛔ Not Running'; }
+        else if (isRunning) { statusClass='s-notracker'; statusText='🟡 No Tracker'; }
+        else { statusClass='s-offline'; statusText='○ Offline'; }
         const areas = (b.areas||'').split(',').map(a=>a.trim()).filter(Boolean);
-        return `<div class="bus-card" onclick="selectBus('${id}')">
+        const clickable = !isNotRunning;
+        return `<div class="bus-card" onclick="${clickable?`selectBus('${id}')`:'toast("⛔ This bus is not running today")'}" style="${isNotRunning?'opacity:.5;':''}">
           <div class="bus-card-top">
             <div class="bus-num-badge">${b.number||id}</div>
             <div class="bus-info">
               <div class="bus-name">${b.number} — ${b.route||'No route set'}</div>
               <div class="bus-route">${b.schedule||'No schedule'}</div>
             </div>
-            <div class="bus-status ${live?'s-live':'s-offline'}">${live?'● Live':'Offline'}</div>
+            <div class="bus-status ${statusClass}">${statusText}</div>
           </div>
           <div class="bus-meta">
             ${areas.map(a=>`<div class="meta-chip">📍 ${a}</div>`).join('')}
@@ -718,17 +734,30 @@ function renderAdminBusList() {
   if (!el) return;
   const buses = Object.entries(allBuses);
   if (!buses.length) { el.innerHTML='<div class="empty-state"><div class="ei">🚌</div><p>No buses yet. Click + Add Bus to start.</p></div>'; return; }
-  el.innerHTML = buses.map(([id,b])=>`
-    <div class="pending-card">
-      <div class="pending-name">Bus ${b.number} — ${b.route||''}</div>
-      <div class="pending-meta">${b.areas||'No areas'}</div>
-      <div class="pending-meta" style="color:var(--yellow);">${b.schedule||'No schedule'}</div>
-      <div class="pending-actions">
-        <button class="btn btn-ghost btn-sm" onclick="editBus('${id}')">✏️ Edit</button>
-        <button class="btn btn-red btn-sm" onclick="deleteBus('${id}')">🗑 Delete</button>
-      </div>
-    </div>
-  `).join('');
+  const today = new Date().toISOString().slice(0,10);
+  if (db) {
+    db.ref('busko_schedule/'+today).once('value', snap => {
+      const schedData = snap.val() || {};
+      el.innerHTML = buses.map(([id,b]) => {
+        const isRunning = schedData[id] === true;
+        const isNotRunning = schedData[id] === false;
+        let runLabel, runStyle;
+        if (isNotRunning) { runLabel='⛔ Not Running'; runStyle='background:var(--red-dim);color:var(--red);border:1px solid #3a1010;'; }
+        else if (isRunning) { runLabel='✅ Running'; runStyle='background:var(--green-dim);color:var(--green);border:1px solid #0a3a20;'; }
+        else { runLabel='○ Set Status'; runStyle='background:var(--s2);color:var(--muted);border:1px solid var(--border);'; }
+        return `<div class="pending-card">
+          <div class="pending-name">Bus ${b.number} — ${b.route||''}</div>
+          <div class="pending-meta">${b.areas||'No areas'}</div>
+          <div class="pending-meta" style="color:var(--yellow);">${b.schedule||'No schedule'}</div>
+          <div class="pending-actions" style="flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="editBus('${id}')">✏️ Edit</button>
+            <button class="btn btn-red btn-sm" onclick="deleteBus('${id}')">🗑 Delete</button>
+            <button class="btn btn-sm" style="${runStyle}" onclick="toggleRunning('${id}')">${runLabel}</button>
+          </div>
+        </div>`;
+      }).join('');
+    });
+  }
 }
 
 // ══ SUGGESTIONS ══
@@ -775,6 +804,26 @@ function approveSuggestion(id) {
 function rejectSuggestion(id) {
   if (!db) return;
   db.ref(`busko_suggestions/${id}`).update({status:'rejected'}).then(() => toast('Rejected'));
+}
+
+// ══ TOGGLE RUNNING TODAY ══
+function toggleRunning(busId) {
+  if (!db) return;
+  const today = new Date().toISOString().slice(0,10);
+  const ref = db.ref(`busko_schedule/${today}/${busId}`);
+  ref.once('value', snap => {
+    const current = snap.val();
+    if (current === false) {
+      // was "not running" → mark as running
+      ref.set(true).then(() => { toast('✅ Marked as Running Today'); renderBusList(); renderAdminBusList(); });
+    } else if (current === true) {
+      // was "running" → mark as not running
+      ref.set(false).then(() => { toast('⛔ Marked as Not Running Today'); renderBusList(); renderAdminBusList(); });
+    } else {
+      // default → mark as running
+      ref.set(true).then(() => { toast('✅ Marked as Running Today'); renderBusList(); renderAdminBusList(); });
+    }
+  });
 }
 
 // ══ HELPERS ══
